@@ -460,7 +460,7 @@ struct FileView: View {
 				ZipView(archive: ar, prefix: "")
 					.navigationTitle(file.fileName())
 					.toolbar {
-						SheetButton(role: .done) {
+						Button("Done") {
 							showArchive = false
 						}
 					}
@@ -478,7 +478,7 @@ struct FileView: View {
 					.navigationBarTitleDisplayMode(.inline)
 				#endif
 				.toolbar {
-					SheetButton(role: .cancel) {
+					Button("Cancel") {
 						showDownloader = nil
 					}
 				}
@@ -498,7 +498,7 @@ struct FileView: View {
 			self.streamingURLView()
 				.navigationTitle("Stream in another app")
 				.toolbar {
-					SheetButton(role: .done) {
+					Button("Done") {
 						showCopyStreamingURL = false
 					}
 				}
@@ -905,7 +905,7 @@ private struct StreamingURLView: View {
 						)
 					#endif
 
-					Text(self.url).compatMonospaced().textSelection(.enabled)
+					Text(self.url).textSelection(.enabled)
 
 					Button("Copy to clipboard", systemImage: copied ? "checkmark.circle.dotted" : "doc.on.doc") {
 						writeTextToPasteboard(self.url)

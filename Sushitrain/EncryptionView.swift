@@ -35,7 +35,7 @@ struct EncryptionView: View {
 			Form {
 				Section("Get encrypted file details") {
 					CompatLabeledContent {
-						TextField("", text: $folderPassword).compatMonospaced()
+						TextField("", text: $folderPassword)
 					} label: {
 						Text("Folder encryption password")
 					}
@@ -55,7 +55,7 @@ struct EncryptionView: View {
 
 				Section("Encrypted file path") {
 					Text(self.folderPassword.isEmpty ? "" : self.fileEncryptedPath)
-						.compatMonospaced()
+						
 						.textSelection(.enabled)
 
 					Button("Copy", systemImage: "document.on.document") {
@@ -69,7 +69,7 @@ struct EncryptionView: View {
 
 				Section("File encryption key") {
 					Text(self.folderPassword.isEmpty || self.fileKey.isEmpty ? "" : self.fileKey)
-						.compatMonospaced()
+						
 						.textSelection(.enabled)
 					Button("Copy", systemImage: "document.on.document") {
 						writeTextToPasteboard(self.fileKey)

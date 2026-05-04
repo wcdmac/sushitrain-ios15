@@ -218,7 +218,7 @@ private struct PhotoFolderAlbumSettingsView: View {
 
 			Section {
 				CompatLabeledContent {
-					TextField("", text: $dirName).compatMonospaced().multilineTextAlignment(.trailing)
+					TextField("", text: $dirName).multilineTextAlignment(.trailing)
 				} label: {
 					Text("To subdirectory")
 				}

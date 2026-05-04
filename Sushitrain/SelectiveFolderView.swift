@@ -431,7 +431,7 @@ private struct SelectiveFileView: View {
 		ZStack {
 			if let entry = entry {
 				if entry.isDeleted() {
-					Label(entry.fileName(), systemImage: entry.systemImage).compatStrikethrough()
+					Label(entry.fileName(), systemImage: entry.systemImage)
 				}
 				else if !entry.isExplicitlySelected() {
 					IntermediateSelectiveFileView(entry: entry, deselect: deselect)
@@ -500,7 +500,7 @@ private struct SelectedFileView: View {
 
 						if fa.isEmpty {
 							Text("Only copy")
-								.foregroundStyle(.orange).compatBold()
+								.foregroundStyle(.orange)
 								.padding(.all, 3).overlay(
 									RoundedRectangle(
 										cornerRadius: 3

@@ -40,7 +40,7 @@ private struct DeviceMetricView: View {
 				EmptyView()
 
 			case .shortID:
-				Text(self.device.shortDeviceID()).compatMonospaced()
+				Text(self.device.shortDeviceID())
 
 			case .lastSeenAgo:
 				if let secondsAgo = self.measurement, !secondsAgo.isNaN {
@@ -471,7 +471,7 @@ struct LatencyView: View {
 									HStack {
 										Image(systemName: "plus").foregroundStyle(Color.accentColor)
 
-										Text(SushitrainShortDeviceID(devID)).compatMonospaced().foregroundStyle(Color.primary)
+										Text(SushitrainShortDeviceID(devID)).foregroundStyle(Color.primary)
 										Spacer()
 									}.frame(maxWidth: .infinity)
 								}
@@ -498,24 +498,24 @@ struct LatencyView: View {
 								// Short device ID
 								TableColumn("Short device ID") { (row: DevicesGridRow) in
 									switch row {
-									case .connectedDevice(let peer): Text(peer.shortDeviceID()).compatMonospaced()
-									case .discoveredDevice(let s): Text(SushitrainShortDeviceID(s)).compatMonospaced()
+									case .connectedDevice(let peer): Text(peer.shortDeviceID())
+									case .discoveredDevice(let s): Text(SushitrainShortDeviceID(s))
 									}
 								}.width(min: 80, ideal: 100).defaultVisibility(.automatic).customizationID("shortID")
 
 								// Long device ID
 								TableColumn("Device ID") { (row: DevicesGridRow) in
 									switch row {
-									case .connectedDevice(let peer): Text(peer.deviceID()).compatMonospaced()
-									case .discoveredDevice(let s): Text(s).compatMonospaced()
+									case .connectedDevice(let peer): Text(peer.deviceID())
+									case .discoveredDevice(let s): Text(s)
 									}
 								}.width(min: 100, ideal: 520).defaultVisibility(.hidden).customizationID("longID")
 
 								// Last seen device address
 								TableColumn("Last address") { (row: DevicesGridRow) in
 									switch row {
-									case .connectedDevice(let peer): Text(self.appState.client.getLastPeerAddress(peer.deviceID())).compatMonospaced()
-									case .discoveredDevice(let s): Text(self.appState.client.getLastPeerAddress(s)).compatMonospaced()
+									case .connectedDevice(let peer): Text(self.appState.client.getLastPeerAddress(peer.deviceID()))
+									case .discoveredDevice(let s): Text(self.appState.client.getLastPeerAddress(s))
 									}
 								}.width(min: 100, ideal: 200).defaultVisibility(.hidden).customizationID("lastAddress")
 

@@ -70,7 +70,7 @@ struct AddDeviceView: View {
 								.navigationTitle("Scan a device QR code")
 								.navigationBarTitleDisplayMode(.inline)
 								.toolbar {
-									SheetButton(role: .cancel) {
+									Button("Cancel") {
 										showQRScanner = false
 									}
 								}
@@ -83,7 +83,7 @@ struct AddDeviceView: View {
 					self.add()
 				}
 
-				SheetButton(role: .cancel) {
+				Button("Cancel") {
 					dismiss()
 				}
 			}

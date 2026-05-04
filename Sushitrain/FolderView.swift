@@ -37,7 +37,7 @@ struct ShareFolderWithDeviceDetailsView: View {
 							#if os(iOS)
 								.textInputAutocapitalization(.never)
 							#endif
-							.compatMonospaced()
+							
 							.focused($passwordFieldFocus)
 					} header: {
 						Text("Encryption password")

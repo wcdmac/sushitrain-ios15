@@ -105,7 +105,7 @@ private struct LogView: View {
 				.textSelection(.enabled)
 				.multilineTextAlignment(.leading)
 				.lineLimit(nil)
-				.compatMonospaced()
+				
 				.padding()
 				.fixedSize(horizontal: false, vertical: true)
 		}
@@ -222,6 +222,7 @@ private struct SupportBundleView: View {
 			}
 		}
 	}
+@available(iOS 16, *) 
 
 	private func sharePreview() -> SharePreview<Never, Never> {
 		return SharePreview("Support bundle")

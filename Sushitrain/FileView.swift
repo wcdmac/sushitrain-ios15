@@ -1,4 +1,4 @@
-// Copyright (C) 2024 Tommy van der Vorst
+﻿// Copyright (C) 2024 Tommy van der Vorst
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -154,19 +154,23 @@ struct FileView: View {
 			.sheet(isPresented: $showArchive) {
 				self.zipSheet()
 			}
+
 			.sheet(item: $showDownloader) { action in
 				self.downloaderSheet(action: action)
 			}
+
 			.sheet(isPresented: $showCopyStreamingURL) {
 				self.copyStreamingURLSheet()
 			}
+
 			.sheet(isPresented: $showEncryptionSheet) {
 				EncryptionView(entry: self.file)
 			}
+
 			.toolbar {
 				// Next/previous buttons
-				ToolbarItemGroup(placement: .navigation) {
-					if let selfIndex = selfIndex, let siblings = siblings {
+				if let selfIndex = selfIndex, let siblings = siblings {
+					ToolbarItemGroup(placement: .navigation) {
 						Button("Previous", systemImage: "chevron.up") { next(-1) }.keyboardShortcut(KeyEquivalent.upArrow)  // Cmd-up
 							.disabled(selfIndex < 1)
 
@@ -206,16 +210,20 @@ struct FileView: View {
 					}
 				#endif
 			}
+
 			.onAppear {
 				selfIndex = self.siblings?.firstIndex(of: file)
 			}
+
 			.task {
-				@Sendable func _doTask() async { await self.update()
+				await self.update()
 			}
+
 			.onChange(of: file) { _ in
 				self.fullyAvailableOnDevices = nil
 				self.update()
 			}
+
 			.onChange(of: appState.eventCounter) { _ in
 				self.update()
 			}
@@ -744,7 +752,8 @@ private struct DownloadProgressView: View {
 				ProgressView(value: progress.percentage, total: 1.0) {
 					VStack {
 						HStack {
-							Label("Downloading file...", systemImage: "arrow.clockwise").foregroundStyle(.green)
+							Label("Downloading file...", systemImage: "arrow.clockwise").foregroundStyle(.green).symbolEffect(
+								.pulse, value: date)
 							Spacer()
 						}
 
@@ -770,7 +779,7 @@ private struct DownloadProgressView: View {
 			else {
 				Label("Waiting to synchronize...", systemImage: "hourglass")
 			}
-		}.task { self.updateProgress() }.onChange(of: self.appState.eventCounter) { _ in self.updateProgress() }
+		}.task { self.updateProgress() }.onChange(of: self.appState.eventCounter) { self.updateProgress() }
 	}
 
 	private func updateProgress() {
@@ -804,11 +813,7 @@ struct FileSharingLinksView: View {
 		if entry.hasExternalSharingURL {
 			Group {
 				if let link = linkToUse {
-					if #available(iOS 16, *) {
-
-						ShareLink(item: link) { Label("Share external link", systemImage: "link.circle") }
-
-					}
+					ShareLink(item: link) { Label("Share external link", systemImage: "link.circle") }
 						#if os(macOS)
 							.buttonStyle(.link)
 						#endif
@@ -829,7 +834,7 @@ struct FileSharingLinksView: View {
 					}.buttonStyle(.link)
 				#endif
 			}.task { await self.update() }
-				.onChange(of: entry) { _ in Task { await self.update() } }
+				.onChange(of: entry) { Task { await self.update() } }
 		}
 	}
 }
@@ -897,7 +902,7 @@ private struct StreamingURLView: View {
 						)
 					#endif
 
-					Text(self.url).compatMonospaced().textSelection(.enabled)
+					Text(self.url).monospaced().textSelection(.enabled)
 
 					Button("Copy to clipboard", systemImage: copied ? "checkmark.circle.dotted" : "doc.on.doc") {
 						writeTextToPasteboard(self.url)

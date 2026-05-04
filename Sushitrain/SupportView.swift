@@ -223,6 +223,7 @@ private struct SupportBundleView: View {
 		}
 	}
 @available(iOS 16, *) 
+@available(iOS 16, *) 
 
 	private func sharePreview() -> SharePreview<Never, Never> {
 		return SharePreview("Support bundle")
@@ -312,7 +313,7 @@ struct MaintenanceView: View {
 			HStack {
 				Spacer()
 				CompatContentUnavailableCustomView {
-					ProgressView().controlSize(.extraLarge)
+					ProgressView().controlSize(.large)
 				} description: {
 					Text("Performing database maintenance...")
 				}

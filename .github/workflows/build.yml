@@ -1,0 +1,60 @@
+name: "Build iOS+macOS app"
+
+on:
+  pull_request:
+  push:
+
+env:
+  GO_VERSION: "~1.26.0"
+  IOS_DEPLOYMENT_TARGET: "15.0"
+
+permissions:
+  id-token: write
+  contents: read
+  attestations: write
+
+jobs:
+  build:
+    runs-on: macos-26
+    steps:
+      - name: Check Xcode version
+        run: |
+          /usr/bin/xcodebuild -version
+          sudo /usr/bin/xcode-select -switch /Applications/Xcode_26.0.1.app/Contents/Developer
+          xcrun simctl list > /dev/null
+          /usr/bin/xcodebuild -version
+
+      - name: Install iOS platform
+        run: |
+          xcodebuild -downloadPlatform iOS
+
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Lint
+        run: |
+          make lint
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+          check-latest: true
+
+      - name: Build core
+        run: |
+          make core
+
+      - name: Build for iOS and macOS
+        run: |
+          make ios mac
+          make cleanup
+
+      - name: Upload application
+        uses: actions/upload-artifact@v4
+        with:
+          name: app
+          path: ./Build
+          retention-days: 3
+

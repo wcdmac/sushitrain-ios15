@@ -1,0 +1,8 @@
+/SushitrainCore/build
+/Sushitrain.xcodeproj/project.xcworkspace/xcuserdata
+/Sushitrain.xcodeproj/xcuserdata
+/localize.sh
+/Build
+*.p12
+/SushitrainCore/gobind
+/SushitrainCore/gomobile

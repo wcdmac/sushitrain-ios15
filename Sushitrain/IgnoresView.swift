@@ -1,0 +1,386 @@
+﻿// Copyright (C) 2024 Tommy van der Vorst
+//
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this file,
+// You can obtain one at https://mozilla.org/MPL/2.0/.
+import SwiftUI
+@preconcurrency import SushitrainCore
+
+/// View for editing the ignore file for non-selective folders (i.e. edits the *whole* ignore file)
+struct IgnoresView: View {
+	@EnvironmentObject private var appState: AppState
+	var folder: SushitrainFolder
+	@State var ignoreLines: [String] = []
+	@State var error: Error? = nil
+	@State var loading = true
+	@State var showUpdateCleanConfirmation = false
+
+	private static let prependedLine = "# Synctrain user-defined ignore file"
+	private static let defaultIgnoreLines = [
+		"(?d).DS_Store", "(?d)Thumbs.db", "(?d)desktop.ini", ".AppleDB", ".AppleDesktop", ".Trashes",
+		".Spotlight-V100", ".localized",
+	]
+
+	var body: some View {
+		List {
+			Section {
+				Text(
+					"This is an advanced feature and should only be used if you know what you are doing."
+				)
+				.bold().foregroundStyle(.red).listRowBackground(Color.clear)
+			}
+
+			Section {
+				if ignoreLines.isEmpty {
+					Text("No ignore patterns defined")
+				}
+
+				ForEach(Array(ignoreLines.enumerated()), id: \.offset) { idx in
+					HStack {
+						TextField(
+							"",
+							text: Binding(
+								get: {
+									if idx.offset < self.ignoreLines.count {
+										return self.ignoreLines[idx.offset]
+									}
+									return ""
+								},
+								set: { nv in
+									if idx.offset < self.ignoreLines.count {
+										self.ignoreLines[idx.offset] = nv
+									}
+								}), prompt: Text("Pattern...")
+						)
+						.autocorrectionDisabled()
+						#if os(iOS)
+							.textInputAutocapitalization(.never)
+							.keyboardType(.asciiCapable)
+						#endif
+
+						#if os(macOS)
+							Button("Delete", systemImage: "trash") {
+								ignoreLines.remove(at: idx.offset)
+							}
+							.labelStyle(.iconOnly)
+							.buttonStyle(.borderless)
+						#endif
+					}
+				}
+				.onDelete(perform: { indexSet in
+					ignoreLines.remove(atOffsets: indexSet)
+				})
+				.disabled(self.loading)
+			} header: {
+				Text("Ignore patterns")
+			} footer: {
+				Text(
+					"Files and subdirectories whose paths match any of the patterns above will not be synchronized with other devices. Existing items matching the patterns will not be updated."
+				)
+				#if os(macOS)
+					.lineLimit(3, reservesSpace: true)
+				#endif
+			}
+
+			Section {
+				Button("Set default patterns") {
+					self.ignoreLines = Self.defaultIgnoreLines
+				}
+				#if os(macOS)
+					.buttonStyle(.link)
+				#endif
+
+				Button("Remove all patterns") {
+					self.ignoreLines = []
+				}.disabled(self.ignoreLines.isEmpty)
+					#if os(macOS)
+						.buttonStyle(.link)
+					#endif
+
+				Button("Apply and clean folder") {
+					showUpdateCleanConfirmation = true
+				}
+				#if os(macOS)
+					.buttonStyle(.link)
+				#endif
+			}.disabled(self.loading)
+		}
+		#if os(macOS)
+			.listStyle(.inset(alternatesRowBackgrounds: true))
+		#endif
+		.task {
+			self.update()
+		}
+		.toolbar {
+			ToolbarItem(placement: .primaryAction) {
+				Button("Add line", systemImage: "plus") {
+					self.ignoreLines.append("")
+				}
+			}
+		}
+		.onDisappear {
+			Log.info("writing ignore lines")
+			self.write()
+		}
+		.alert(isPresented: Binding.isNotNil($error)) {
+			Alert(
+				title: Text("Error loading ignore settings"),
+				message: error != nil ? Text(error!.localizedDescription) : nil,
+				dismissButton: .default(Text("OK")) {
+					self.error = nil
+				})
+		}
+		.confirmationDialog(
+			"Are you sure you want to apply the patterns and to clean the folder? Files and subdirectories that match the patterns will be permanently removed from this device. Files may be lost if they are not available on other devices.",
+			isPresented: $showUpdateCleanConfirmation, titleVisibility: .visible
+		) {
+			Button("Apply patterns and clean folder", role: .destructive) {
+				self.applyAndClean()
+			}
+		}
+	}
+
+	private func applyAndClean() {
+		self.loading = true
+		self.write()
+		if self.error == nil {
+			Task {
+				do {
+					try await Task.detached(priority: .userInitiated) {
+						try self.folder.cleanSelection()
+					}.value
+				}
+				catch {
+					Log.warn("failed to clean selection: \(error)")
+					self.error = error
+				}
+				self.loading = false
+			}
+		}
+		else {
+			self.loading = false
+		}
+	}
+
+	private func write() {
+		do {
+			Log.info("writing ignore lines \(self.ignoreLines)")
+			if self.error == nil {
+				var lines = self.ignoreLines
+				lines.removeAll { $0.isEmpty }
+				lines.insert(Self.prependedLine, at: 0)
+				try self.folder.setIgnoreLines(SushitrainListOfStrings.from(lines))
+			}
+		}
+		catch {
+			Log.warn("failed to write ignore file: \(error)")
+			self.error = error
+		}
+	}
+
+	private func update() {
+		do {
+			self.error = nil
+			self.loading = true
+			var lines = (try self.folder.ignoreLines()).asArray()
+			Log.info("Got lines: \(lines)")
+			if !lines.isEmpty && lines[0] == Self.prependedLine {
+				lines.remove(at: 0)
+			}
+			self.ignoreLines = lines
+		}
+		catch {
+			self.ignoreLines = []
+			Log.warn("failed to read ignore file: \(error)")
+			self.error = error
+		}
+		self.loading = false
+	}
+}
+
+/// View for editing global ignore patterns for a selective folder (i.e. edits part of the ignore file)
+struct SelectiveIgnoresView: View {
+	@EnvironmentObject private var appState: AppState
+	var folder: SushitrainFolder
+	@State var ignorePatterns: [String] = []
+	@State var error: Error? = nil
+	@State var loading = true
+	@State var showUpdateCleanConfirmation = false
+
+	private static let defaultPatterns = [
+		"(?d).DS_Store", "(?d)Thumbs.db", "(?d)desktop.ini", "(?d).AppleDB", "(?d).AppleDesktop", "(?d).Trashes",
+		"(?d).Spotlight-V100", "(?d).localized",
+	]
+
+	var body: some View {
+		List {
+			Section {
+				Text(
+					"This is an advanced feature and should only be used if you know what you are doing."
+				)
+				.bold().foregroundStyle(.red).listRowBackground(Color.clear)
+			}
+
+			Section {
+				if ignorePatterns.isEmpty {
+					Text("No ignore patterns defined")
+				}
+
+				ForEach(Array(ignorePatterns.enumerated()), id: \.offset) { idx in
+					HStack {
+						TextField(
+							"",
+							text: Binding(
+								get: {
+									if idx.offset < self.ignorePatterns.count {
+										return self.ignorePatterns[idx.offset]
+									}
+									return ""
+								},
+								set: { nv in
+									if idx.offset < self.ignorePatterns.count {
+										self.ignorePatterns[idx.offset] = nv
+									}
+								}), prompt: Text("Pattern...")
+						)
+						.autocorrectionDisabled()
+						#if os(iOS)
+							.textInputAutocapitalization(.never)
+							.keyboardType(.asciiCapable)
+						#endif
+
+						#if os(macOS)
+							Button("Delete", systemImage: "trash") {
+								ignorePatterns.remove(at: idx.offset)
+							}
+							.labelStyle(.iconOnly)
+							.buttonStyle(.borderless)
+						#endif
+					}
+				}
+				.onDelete(perform: { indexSet in
+					ignorePatterns.remove(atOffsets: indexSet)
+				})
+				.disabled(self.loading)
+			} header: {
+				Text("Ignore patterns")
+			}
+
+			Section {
+				Button("Add line", systemImage: "plus") {
+					self.ignorePatterns.append("(?d)")
+				}.disabled(self.loading)
+					#if os(macOS)
+						.buttonStyle(.link)
+					#endif
+			} footer: {
+				Text(
+					"Files and subdirectories whose paths match any of the patterns above will not be synchronized with other devices. Existing items matching the patterns will not be updated."
+				)
+				#if os(macOS)
+					.lineLimit(3, reservesSpace: true)
+				#endif
+			}
+
+			Section {
+				Button("Set default patterns") {
+					self.ignorePatterns = Self.defaultPatterns
+				}
+				#if os(macOS)
+					.buttonStyle(.link)
+				#endif
+
+				Button("Remove all patterns") {
+					self.ignorePatterns = []
+				}
+				#if os(macOS)
+					.buttonStyle(.link)
+				#endif
+			}.disabled(self.loading)
+
+			Section {
+				Button("Apply and clean folder", role: .destructive) {
+					showUpdateCleanConfirmation = true
+				}
+				#if os(macOS)
+					.buttonStyle(.link)
+				#endif
+			}.disabled(self.loading)
+		}
+		#if os(macOS)
+			.listStyle(.inset(alternatesRowBackgrounds: true))
+		#endif
+		.task {
+			self.update()
+		}
+		.alert(isPresented: Binding.isNotNil($error)) {
+			Alert(
+				title: Text("Error loading ignore settings"),
+				message: error != nil ? Text(error!.localizedDescription) : nil,
+				dismissButton: .default(Text("OK")) {
+					self.error = nil
+				})
+		}
+		.confirmationDialog(
+			"Are you sure you want to apply the patterns and to clean the folder? Files and subdirectories that match the patterns will be permanently removed from this device. Files may be lost if they are not available on other devices.",
+			isPresented: $showUpdateCleanConfirmation, titleVisibility: .visible
+		) {
+			Button("Apply patterns and clean folder", role: .destructive) {
+				self.applyAndClean()
+			}
+		}
+	}
+
+	private func applyAndClean() {
+		self.loading = true
+		self.write()
+		if self.error == nil {
+			Task {
+				do {
+					try await Task.detached(priority: .userInitiated) {
+						try self.folder.cleanSelection()
+					}.value
+				}
+				catch {
+					Log.warn("failed to clean selection: \(error)")
+					self.error = error
+				}
+				self.loading = false
+			}
+		}
+		else {
+			self.loading = false
+		}
+	}
+
+	private func write() {
+		do {
+			Log.info("writing ignore patterns \(self.ignorePatterns)")
+			if self.error == nil {
+				var lines = self.ignorePatterns
+				lines.removeAll { $0.isEmpty }
+				try self.folder.setSelectiveGlobalIgnorePatterns(SushitrainListOfStrings.from(lines))
+			}
+		}
+		catch {
+			Log.warn("failed to write ignore patterns: \(error)")
+			self.error = error
+		}
+	}
+
+	private func update() {
+		do {
+			self.error = nil
+			self.loading = true
+			let lines = (try self.folder.getSelectiveGlobalIgnorePatterns()).asArray()
+			Log.info("Got patterns: \(lines)")
+			self.ignorePatterns = lines
+		}
+		catch {
+			self.ignorePatterns = []
+			Log.warn("failed to read ignore file: \(error)")
+			self.error = error
+		}
+		self.loading = false
+	}
+}

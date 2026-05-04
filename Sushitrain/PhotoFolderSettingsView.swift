@@ -1,0 +1,317 @@
+﻿// Copyright (C) 2025 Tommy van der Vorst
+//
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this file,
+// You can obtain one at https://mozilla.org/MPL/2.0/.
+import Foundation
+import SwiftUI
+import Photos
+@preconcurrency import SushitrainCore
+
+struct PhotoFolderSettingsView: View {
+	let folder: SushitrainFolder
+	@State private var config: PhotoFSConfiguration = PhotoFSConfiguration()
+
+	var body: some View {
+		PhotoFolderConfigurationView(config: $config)
+			.task {
+				await self.update()
+			}
+			.onChange(of: config) { _ in
+				Task {
+					await self.save()
+				}
+			}
+	}
+
+	private func save() async {
+		do {
+			let serialized = try JSONEncoder().encode(self.config)
+			try self.folder.setPath(String(data: serialized, encoding: .utf8))
+		}
+		catch {
+			Log.info("Error saving album config: \(error.localizedDescription)")
+		}
+	}
+
+	private func update() async {
+		do {
+			let path: String = self.folder.path()
+			if let d = path.data(using: .utf8) {
+				self.config = try JSONDecoder().decode(PhotoFSConfiguration.self, from: d)
+			}
+			else {
+				self.config = PhotoFSConfiguration()
+			}
+		}
+		catch {
+			self.config = PhotoFSConfiguration()
+		}
+	}
+}
+
+struct PhotoFolderConfigurationView: View {
+	@Binding var config: PhotoFSConfiguration
+
+	private enum ShowingSheet: String, Identifiable {
+		typealias ObjectIdentifier = String
+
+		var id: ObjectIdentifier {
+			return self.rawValue
+		}
+
+		case editing = "editing"
+		case adding = "adding"
+	}
+
+	@State private var showingSheet: ShowingSheet? = nil
+	@State private var editingAlbumConfig = PhotoFSAlbumConfiguration()
+	@State private var editingAlbum = false
+	@State private var editingDirName = ""
+	@State private var editingOldDirName = ""
+
+	var body: some View {
+		Section("Albums") {
+			let folderPairs = Array(config.folders)
+			ForEach(folderPairs, id: \.key) { folderName, albumConfig in
+				Button(folderName, systemImage: "folder.fill") {
+					editingAlbumConfig = albumConfig
+					editingOldDirName = folderName
+					editingDirName = folderName
+					self.showingSheet = .editing
+				}
+				#if os(macOS)
+					.buttonStyle(.link)
+					.padding(3.0)
+				#endif
+			}
+			.onDelete { idxs in
+				Task {
+					for idx in idxs {
+						let albumName = folderPairs[idx].key
+						self.config.folders.removeValue(forKey: albumName)
+					}
+				}
+			}
+			Button("Add album...", systemImage: "plus") {
+				editingAlbumConfig = PhotoFSAlbumConfiguration()
+				self.showingSheet = .adding
+				editingDirName = ""
+			}
+			// This sheet must be attached to the 'Add album' button, because when it's attached to the Section it will
+			// be repeated, and chaos ensues (multiple sheets presented at the same time)
+			.sheet(item: $showingSheet) { showingSheet in
+				CompatNavigationStack {
+					switch showingSheet {
+					case .editing:
+						PhotoFolderAlbumSettingsView(config: $editingAlbumConfig, dirName: $editingDirName)
+							.interactiveDismissDisabled()
+							#if os(iOS)
+								.navigationBarTitleDisplayMode(.inline)
+							#endif
+							.toolbar {
+								ToolbarItem(
+									placement: .confirmationAction,
+									content: {
+										Button("Save") {
+											if editingAlbumConfig.isValid {
+												self.edit()
+											}
+										}
+									})
+							}
+
+					case .adding:
+						PhotoFolderAlbumSettingsView(config: $editingAlbumConfig, dirName: $editingDirName)
+							.navigationTitle("Add album")
+							#if os(iOS)
+								.navigationBarTitleDisplayMode(.inline)
+							#endif
+							.toolbar {
+								ToolbarItem(
+									placement: .confirmationAction,
+									content: {
+										Button("Add") {
+											self.add()
+										}.disabled(editingDirName.isEmpty || !editingAlbumConfig.isValid)
+									})
+							}
+					}
+				}
+			}
+			#if os(macOS)
+				.padding(3.0)
+				.buttonStyle(.link)
+			#endif
+		}
+	}
+
+	private func edit() {
+		Task {
+			let newName =
+				editingDirName.isEmpty
+				? (self.editingOldDirName.isEmpty ? self.editingAlbumConfig.albumID : editingOldDirName) : editingDirName
+			self.config.folders.removeValue(forKey: self.editingOldDirName)
+			self.config.folders[newName] = self.editingAlbumConfig
+			self.showingSheet = nil
+			editingAlbum = false
+			editingOldDirName = ""
+			editingDirName = ""
+		}
+	}
+
+	private func add() {
+		Task {
+			let newName = editingDirName.isEmpty ? self.editingAlbumConfig.albumID : editingDirName
+			self.config.folders[newName] = self.editingAlbumConfig
+			self.showingSheet = nil
+		}
+	}
+}
+
+private struct PhotoFolderAlbumSettingsView: View {
+	@Binding var config: PhotoFSAlbumConfiguration
+	@Binding var dirName: String
+
+	@EnvironmentObject private var appState: AppState
+	@State private var authorizationStatus: PHAuthorizationStatus = .notDetermined
+	@State private var albumPickerShown = false
+
+	var body: some View {
+		let albums = self.authorizationStatus == .authorized ? self.loadAlbums() : []
+
+		Form {
+			Section {
+				if authorizationStatus == .authorized {
+					Picker("From album", selection: $config.albumID) {
+						Text("None").tag("")
+						ForEach(albums, id: \.localIdentifier) { album in
+							Text(album.localizedTitle ?? "Unknown album").tag(album.localIdentifier)
+						}
+					}
+					.pickerStyle(.menu)
+					.onChange(of: config.albumID) { _, newValue in
+						// Set directory name to album name in case no directory name was entered yet
+						if self.dirName.isEmpty {
+							// Find album name
+							if let albumInfo = albums.first(where: { $0.localIdentifier == newValue }) {
+								self.dirName = albumInfo.localizedTitle ?? self.dirName
+							}
+						}
+					}
+				}
+				else if authorizationStatus == .denied || authorizationStatus == .restricted {
+					Text("Synctrain cannot access your photo library right now")
+					#if os(iOS)
+						Button("Review permissions in the Settings app") {
+							openAppSettings()
+						}
+					#endif
+				}
+				else {
+					Text("Synctrain cannot access your photo library right now")
+					Button("Allow Synctrain to access photos") {
+						self.requestAuthorization()
+					}
+				}
+			}
+
+			Section {
+				LabeledContent {
+					TextField("", text: $dirName).monospaced().multilineTextAlignment(.trailing)
+				} label: {
+					Text("To subdirectory")
+				}
+
+				PhotoFolderStructureView(
+					folderStructure: Binding(
+						get: {
+							self.config.folderStructure ?? PhotoBackupFolderStructure.singleFolder
+						},
+						set: {
+							self.config.folderStructure = $0
+						}))
+
+				Text("Example file location in folder: ")
+					+ Text("\(dirName)/\((self.config.folderStructure ?? PhotoBackupFolderStructure.singleFolder).examplePath)")
+					.monospaced()
+			}
+
+			if self.config.folderStructure?.usesTimeZone ?? false {
+				Section {
+					PhotoBackupTimeZoneView(
+						timeZone: Binding(
+							get: {
+								self.config.timeZone ?? PhotoBackupTimeZone.specific(timeZone: TimeZone.gmt.identifier)
+							},
+							set: {
+								self.config.timeZone = $0
+							}))
+				} footer: {
+					if let tz = self.config.timeZone {
+						PhotoBackupTimeZoneExplainerView(timeZone: tz)
+					}
+				}
+			}
+
+			Section {
+				Toggle("Photos", isOn: .constant(true)).disabled(true)
+				Toggle("Live photos", isOn: .constant(false)).disabled(true)
+				Toggle("Videos", isOn: .constant(false)).disabled(true)
+			} header: {
+				Text("Save the following media types")
+			} footer: {
+				Text(
+					"Photo folders can only synchronize photos in the current version of the app. To save videos and/or live photos, use the photo back-up function, available in the settings screen."
+				)
+			}
+		}
+		#if os(macOS)
+			.formStyle(.grouped)
+		#endif
+		.task {
+			authorizationStatus = PHPhotoLibrary.authorizationStatus()
+		}
+		.navigationTitle(dirName.isEmpty ? "Add album" : "Settings for '\(dirName)'")
+	}
+
+	private func requestAuthorization() {
+		PHPhotoLibrary.requestAuthorization(for: .readWrite) { status in
+			Task { @MainActor in
+				authorizationStatus = status
+			}
+		}
+	}
+
+	func loadAlbums() -> [PHAssetCollection] {
+		var albums: [PHAssetCollection] = []
+		let options = PHFetchOptions()
+		options.sortDescriptors = [NSSortDescriptor(key: "localizedTitle", ascending: true)]
+		let userAlbums = PHAssetCollection.fetchAssetCollections(
+			with: .album, subtype: .albumRegular, options: options)
+		userAlbums.enumerateObjects { (collection, _, _) in
+			albums.append(collection)
+		}
+
+		// Fetch system albums, including 'Recents'
+		let systemAlbumsOptions = PHFetchOptions()
+		let systemAlbums = PHAssetCollection.fetchAssetCollections(
+			with: .smartAlbum, subtype: .any, options: systemAlbumsOptions)
+		systemAlbums.enumerateObjects { (collection, _, _) in
+			albums.append(collection)
+		}
+		return albums
+	}
+
+	#if os(iOS)
+		func openAppSettings() {
+			guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+				return
+			}
+
+			if UIApplication.shared.canOpenURL(settingsUrl) {
+				UIApplication.shared.open(settingsUrl)
+			}
+		}
+	#endif
+}

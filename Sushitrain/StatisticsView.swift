@@ -76,7 +76,7 @@ struct TotalStatisticsView: View {
 			.navigationBarTitleDisplayMode(.inline)
 		#endif
 		#if os(macOS)
-			.formStyle(.grouped)
+			
 		#endif
 	}
 }

@@ -262,7 +262,7 @@ struct FolderStatisticsView: View {
 			await self.update()
 		}
 		#if os(macOS)
-			.formStyle(.grouped)
+			
 		#endif
 		#if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)

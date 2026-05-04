@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2024 Tommy van der Vorst
+// Copyright (C) 2024 Tommy van der Vorst
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -227,9 +227,8 @@ struct PhotoBackupSettingsView: View {
 					.disabled(photoBackup.isBackingUp)
 					.onChange(of: photoBackup.folderStructure) { _ in photoBackup.resetLastSuccessfulChangeToken() }
 
-				Text("Example file location in folder: ")
-					+ Text("\(photoBackup.subDirectoryPath)/\(photoBackup.folderStructure.examplePath)")
-					.compatMonospaced()
+				Text("Example file location in folder: \(photoBackup.subDirectoryPath)/\(photoBackup.folderStructure.examplePath)")
+					.font(.system(.body, design: .monospaced))
 
 			} footer: {
 				Text(
@@ -364,7 +363,7 @@ struct PhotoBackupSettingsView: View {
 		}
 		.navigationTitle("Photo back-up")
 		#if os(macOS)
-			.formStyle(.grouped)
+			
 		#endif
 		#if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
@@ -472,7 +471,7 @@ struct PhotoBackupTimeZoneView: View {
 	var body: some View {
 		Picker("Use time zone", selection: $timeZone) {
 			Text("Current").tag(PhotoBackupTimeZone.current)
-			Text("GMT").tag(PhotoBackupTimeZone.specific(timeZone: TimeZone.gmt.identifier))
+			Text("GMT").tag(PhotoBackupTimeZone.specific(timeZone: TimeZone(identifier: "GMT")!.identifier))
 			Text(localTimeZone.description).tag(PhotoBackupTimeZone.specific(timeZone: localTimeZone.identifier))
 		}
 		.pickerStyle(.menu)

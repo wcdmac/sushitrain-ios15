@@ -209,7 +209,7 @@ struct DeviceView: View {
 			}
 		}
 		#if os(macOS)
-			.formStyle(.grouped)
+			
 		#endif
 		.navigationTitle(!device.exists() || device.name().isEmpty ? device.deviceID() : device.name())
 		.task {

@@ -85,7 +85,7 @@ import SwiftUI
 							}.disabled(destURL == nil)
 						}.disabled(folderPassword.isEmpty || folderID.isEmpty || sourceURL == nil || selectedURLs.isEmpty)
 					}
-					.formStyle(.grouped)
+					
 					.disabled(loading)
 					.frame(minWidth: 250, idealWidth: 250, maxWidth: 320, maxHeight: .infinity)
 

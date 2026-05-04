@@ -86,7 +86,7 @@ struct AboutView: View {
 			.navigationBarTitleDisplayMode(.inline)
 		#endif
 		#if os(macOS)
-			.formStyle(.grouped)
+			
 		#endif
 		.sheet(isPresented: $showOnboarding) {
 			if #available(iOS 18, macOS 15, *) {

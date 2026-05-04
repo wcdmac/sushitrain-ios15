@@ -267,7 +267,7 @@ struct FileEntryLink<Content: View>: View {
 	}
 
 	var body: some View {
-		self.inner.draggable(entry).contextMenu {
+		self.inner.contextMenu {
 			#if os(iOS)
 				NavigationLink(
 					destination: FileView(file: entry, showPath: self.inFolder == nil, siblings: siblings)

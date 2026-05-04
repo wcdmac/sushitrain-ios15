@@ -51,7 +51,7 @@ struct IdenticonView: View {
 			let paddedRect = rect.insetBy(dx: padding, dy: padding)
 			let rectWidth = ceil(paddedRect.width / CGFloat(cells))
 			let rectHeight = ceil(paddedRect.height / CGFloat(cells))
-			context.fill(Rectangle().path(in: rect), with: .style(.windowBackground))
+			context.fill(Rectangle().path(in: rect), with: .style(.black))
 			context.fill(Rectangle().path(in: rect), with: .color(Color.accentColor.opacity(0.05)))
 
 			let xOffset = -(rectWidth * CGFloat(cells) - paddedRect.width) / 2.0 + paddedRect.origin.x

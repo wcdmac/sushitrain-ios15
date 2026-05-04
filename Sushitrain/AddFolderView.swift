@@ -199,7 +199,7 @@ struct AddFolderView: View {
 				}
 			}
 			#if os(macOS)
-				.formStyle(.grouped)
+				
 			#endif
 			.onAppear {
 				idFieldFocus = true

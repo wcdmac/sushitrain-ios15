@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2025 Tommy van der Vorst
+// Copyright (C) 2025 Tommy van der Vorst
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -232,9 +232,8 @@ private struct PhotoFolderAlbumSettingsView: View {
 							self.config.folderStructure = $0
 						}))
 
-				Text("Example file location in folder: ")
-					+ Text("\(dirName)/\((self.config.folderStructure ?? PhotoBackupFolderStructure.singleFolder).examplePath)")
-					.compatMonospaced()
+				Text("Example file location in folder: \(dirName)/\((self.config.folderStructure ?? PhotoBackupFolderStructure.singleFolder).examplePath)")
+					.font(.system(.body, design: .monospaced))
 			}
 
 			if self.config.folderStructure?.usesTimeZone ?? false {
@@ -267,7 +266,7 @@ private struct PhotoFolderAlbumSettingsView: View {
 			}
 		}
 		#if os(macOS)
-			.formStyle(.grouped)
+			
 		#endif
 		.task {
 			authorizationStatus = PHPhotoLibrary.authorizationStatus()

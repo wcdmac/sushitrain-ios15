@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2024 Tommy van der Vorst
+// Copyright (C) 2024 Tommy van der Vorst
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -54,7 +54,7 @@ struct ShareFolderWithDeviceDetailsView: View {
 				await self.update()
 			}
 			#if os(macOS)
-				.formStyle(.grouped)
+				
 			#endif
 			.onAppear {
 				self.newPassword = folder.encryptionPassword(for: deviceID)
@@ -267,7 +267,7 @@ struct FolderStatusView: View {
 		#if os(iOS)
 			Label(folderStatus.text, systemImage: folderStatus.systemImage)
 				.foregroundStyle(folderStatus.color)
-				.badge(Text(folderStatus.badge).foregroundStyle(folderStatus.color))
+				.badge(Text(folderStatus.badge).foregroundColor(folderStatus.color))
 		#else
 			Label(folderStatus.fullText, systemImage: folderStatus.systemImage)
 				.foregroundStyle(folderStatus.color)
@@ -553,21 +553,20 @@ struct ExternalFolderInaccessibleView: View {
 			)
 		}
 		else {
-			CompatContentUnavailableView(
-				label: {
-					Label("Inaccessible folder", systemImage: "xmark.app")
-				},
-				description: {
-					Text(
-						"Synctrain cannot access this folder anymore. Please click the button below to re-select the folder on your system. This should re-grant Synctrain access to the folder."
-					)
-				},
-				actions: {
-					Button("Re-link folder...", systemImage: "link") {
-						self.tryFixBookmark()
-					}
+			VStack(spacing: 12) {
+				Label("Inaccessible folder", systemImage: "xmark.app")
+					.font(.headline)
+				Text(
+					"Synctrain cannot access this folder anymore. Please click the button below to re-select the folder on your system. This should re-grant Synctrain access to the folder."
+				)
+				.font(.subheadline)
+				.multilineTextAlignment(.center)
+				Button("Re-link folder...", systemImage: "link") {
+					self.tryFixBookmark()
 				}
-			)
+			}
+			.frame(maxWidth: .infinity, maxHeight: .infinity)
+			.padding()
 			// Folder selector for fixing external folders
 			.fileImporter(
 				isPresented: $showPathSelector, allowedContentTypes: [.folder],
@@ -728,7 +727,7 @@ struct FolderView: View {
 			}
 		}
 		#if os(macOS)
-			.formStyle(.grouped)
+			
 		#endif
 		#if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
@@ -806,7 +805,7 @@ struct ShareWithDeviceToggleView: View {
 					deviceID: $editEncryptionPasswordDeviceID)
 			}
 		}
-		.onChange(of: showEditEncryptionPassword) { _, nv in
+		.onChange(of: showEditEncryptionPassword) { nv in
 			if !nv {
 				self.update()
 			}
@@ -1029,7 +1028,7 @@ private struct FolderThumbnailSettingsView: View {
 			}
 		}
 		#if os(macOS)
-			.formStyle(.grouped)
+			
 		#endif
 		.navigationTitle("Thumbnails")
 		#if os(iOS)
@@ -1381,7 +1380,7 @@ private struct AdvancedFolderSettingsView: View {
 			.navigationBarTitleDisplayMode(.inline)
 		#endif
 		#if os(macOS)
-			.formStyle(.grouped)
+			
 		#endif
 	}
 

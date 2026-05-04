@@ -78,7 +78,9 @@ struct SushitrainApp: App {
 		self._appState = StateObject(wrappedValue: appState)
 		self.userSettings = appState.userSettings
 
-		AppDependencyManager.shared.add(dependency: appState)
+		if #available(iOS 16, *) {
+			AppDependencyManager.shared.add(dependency: appState)
+		}
 		appState.isLoggingToFile = enableLoggingToFile
 		self.delegate = SushitrainDelegate(appState: appState)
 		client.delegate = self.delegate

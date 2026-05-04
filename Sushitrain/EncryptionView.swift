@@ -88,7 +88,7 @@ struct EncryptionView: View {
 					await self.update()
 				}
 			}
-			.formStyle(.grouped)
+			
 			.navigationTitle(entry.name())
 			.toolbar {
 				SheetButton(role: .done) {

@@ -135,7 +135,7 @@ extension View {
         if #available(iOS 16, macOS 13, *) {
             return AnyView(self.bold())
         } else {
-            return AnyView(self.font(.system(.body, design: .default, weight: .bold)))
+            return AnyView(self)
         }
     }
 }

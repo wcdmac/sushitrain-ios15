@@ -86,7 +86,7 @@ struct ExternalSharingSettingsView: View {
 			.navigationBarTitleDisplayMode(.inline)
 		#endif
 		#if os(macOS)
-			.formStyle(.grouped)
+			
 		#endif
 		.onAppear {
 			self.settings = FolderSettingsManager.shared.settingsFor(folderID: folder.folderID).externalSharing

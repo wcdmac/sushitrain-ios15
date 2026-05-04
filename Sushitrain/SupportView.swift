@@ -283,7 +283,7 @@ struct SupportView: View {
 			}
 		}
 		#if os(macOS)
-			.formStyle(.grouped)
+			
 		#endif
 		.navigationTitle("Questions, support & feedback")
 		#if os(iOS)
@@ -311,7 +311,7 @@ struct MaintenanceView: View {
 			HStack {
 				Spacer()
 				CompatContentUnavailableCustomView {
-					ProgressView().controlSize(.extraLarge)
+					ProgressView().controlSize(.large)
 				} description: {
 					Text("Performing database maintenance...")
 				}
@@ -591,7 +591,7 @@ struct TroubleshootingView: View {
 			}
 		}
 		#if os(macOS)
-			.formStyle(.grouped)
+			
 			.navigationBarBackButtonHidden(true)
 			.toolbar {
 				ToolbarItem(placement: .navigation) {

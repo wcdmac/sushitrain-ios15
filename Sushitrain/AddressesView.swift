@@ -250,7 +250,7 @@ private struct AddressView: View {
 		}
 		.navigationTitle(self.address)
 		#if os(macOS)
-			.formStyle(.grouped)
+			
 		#endif
 	}
 }
@@ -447,7 +447,7 @@ struct AddressesView: View {
 			.navigationBarTitleDisplayMode(.inline)
 		#endif
 		#if os(macOS)
-			.formStyle(.grouped)
+			
 		#endif
 		.toolbar {
 			#if os(iOS)

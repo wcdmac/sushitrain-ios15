@@ -48,7 +48,7 @@ struct AddDeviceView: View {
 				}
 			}
 			#if os(macOS)
-				.formStyle(.grouped)
+				
 			#endif
 			.onAppear {
 				idFieldFocus = true

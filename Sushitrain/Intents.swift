@@ -29,6 +29,7 @@ private enum IntentHandlingError: LocalizedError {
 	}
 }
 
+@available(iOS 16, macOS 13, *)
 extension AppState {
 	fileprivate func waitForAppStarted() async throws {
 		// Wait for app startup
@@ -132,7 +133,7 @@ extension AppState {
 				}
 
 				group.addTask {
-					try await compatTaskSleep(seconds: self.time)
+					try await compatTaskSleep(seconds: Double(self.time))
 				}
 
 				defer { group.cancelAll() }
@@ -165,7 +166,7 @@ extension AppState {
 			try await appState.waitForAppStarted()
 			await appState.awake()
 			do {
-				try await compatTaskSleep(seconds: self.time)
+				try await compatTaskSleep(seconds: Double(self.time))
 			}
 			catch {
 				await appState.sleep()
@@ -185,11 +186,11 @@ enum FileEntityQueryPredicate {
 }
 
 @available(iOS 16, macOS 13, *) struct FileEntityQuery: EntityQuery, EntityPropertyQuery {
-	static let sortingOptions = SortingOptions {
+	nonisolated(unsafe) 	static let sortingOptions = SortingOptions {
 		SortableBy(\FileEntity.$name)
 	}
 
-	static let properties = QueryProperties {
+	nonisolated(unsafe) 	static let properties = QueryProperties {
 		Property(\.$name) {
 			ContainsComparator { FileEntityQueryPredicate.fileNameContains($0) }
 		}

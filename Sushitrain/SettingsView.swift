@@ -108,7 +108,7 @@ import SushitrainCore
 					)
 				}
 			}
-			.formStyle(.grouped)
+			
 			.navigationTitle("Configuration settings")
 			.fileImporter(isPresented: $showHomeDirectorySelector, allowedContentTypes: [.directory]) {
 				result in
@@ -461,7 +461,7 @@ struct AdvancedSettingsView: View {
 		}
 		.navigationTitle("Advanced settings")
 		#if os(macOS)
-			.formStyle(.grouped)
+			
 		#endif
 		#if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
@@ -852,7 +852,7 @@ private struct BandwidthSettingsView: View {
 		}
 		.navigationTitle("Bandwidth limitations")
 		#if os(macOS)
-			.formStyle(.grouped)
+			
 		#endif
 		#if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
@@ -908,7 +908,7 @@ private struct BandwidthSettingsView: View {
 			}
 			.frame(minWidth: 500, minHeight: 450)
 			.windowResizeBehavior(.automatic)
-			.formStyle(.grouped)
+			
 		}
 	}
 
@@ -1038,7 +1038,7 @@ private struct BandwidthSettingsView: View {
 			}
 			.navigationTitle("Settings")
 			#if os(macOS)
-				.formStyle(.grouped)
+				
 			#endif
 		}
 	}

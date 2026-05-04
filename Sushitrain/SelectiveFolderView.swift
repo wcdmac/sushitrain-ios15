@@ -98,7 +98,7 @@ struct SelectiveFolderView: View {
 			.opacity(selectedPaths.isEmpty ? 0.0 : 1.0)
 			.disabled(isLoading || isClearing)
 			#if os(macOS)
-				.formStyle(.grouped)
+				
 			#endif
 		}
 		.toolbar {

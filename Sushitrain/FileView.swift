@@ -110,7 +110,7 @@ struct FileView: View {
 				}
 			}
 			#if os(macOS)
-				.formStyle(.grouped)
+				
 			#endif
 			.navigationTitle(file.fileName())
 			.quickLookPreview(self.$localItemURL)
@@ -920,7 +920,7 @@ private struct StreamingURLView: View {
 			}
 		}
 		#if os(macOS)
-			.formStyle(.grouped)
+			
 		#endif
 		.task {
 			self.url = entry.onDemandURL()

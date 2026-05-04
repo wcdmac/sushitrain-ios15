@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2024 Tommy van der Vorst
+// Copyright (C) 2024 Tommy van der Vorst
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -272,7 +272,7 @@ struct BrowserView: View {
 			self.update()
 		}
 
-		.onChange(of: showSettings) { _, nv in
+		.onChange(of: showSettings) { nv in
 			// Needed to update the screen after removing a folder
 			if !nv {
 				Log.info("Update because of showSettings = \(nv)")
@@ -795,39 +795,40 @@ struct BrowserView: View {
 	}
 
 	private func dropItemProviders(_ items: [NSItemProvider]) async {
-		var urls: [URL] = []
+		if #available(iOS 16, *) {
+			var urls: [URL] = []
 
-		for item in items {
-			do {
-				let tempURL: URL? = try await withCheckedThrowingContinuation { cont in
-					// TODO: add file coordination
-					let _ = item.loadFileRepresentation(for: UTType.data, openInPlace: true) { tempURL, wasOpenedInPlace, err in
-						if let err = err {
-							cont.resume(throwing: err)
-							return
-						}
-						else {
-							cont.resume(returning: tempURL)
+			for item in items {
+				do {
+					let tempURL: URL? = try await withCheckedThrowingContinuation { cont in
+						let _ = item.loadFileRepresentation(for: UTType.data, openInPlace: true) { tempURL, wasOpenedInPlace, err in
+							if let err = err {
+								cont.resume(throwing: err)
+								return
+							}
+							else {
+								cont.resume(returning: tempURL)
+							}
 						}
 					}
-				}
 
-				if let tempURL = tempURL {
-					urls.append(tempURL)
+					if let tempURL = tempURL {
+						urls.append(tempURL)
+					}
 				}
+				catch {
+					Log.warn("failed to load file representation for item: \(error)")
+				}
+			}
+
+			// Process the files
+			do {
+				try self.dropFiles(urls)
 			}
 			catch {
-				Log.warn("failed to load file representation for item: \(error)")
+				Log.warn("failed to drop files: \(error)")
+				self.showAlert = .error(error.localizedDescription)
 			}
-		}
-
-		// Process the files
-		do {
-			try self.dropFiles(urls)
-		}
-		catch {
-			Log.warn("failed to drop files: \(error)")
-			self.showAlert = .error(error.localizedDescription)
 		}
 	}
 

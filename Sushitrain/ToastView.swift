@@ -106,12 +106,12 @@ private struct GlassyToastView: View {
 		else {
 			#if os(iOS)
 				ToastView(toast: toast)
-					.shadow(color: Color(Color.black.opacity(0.08)), radius: 8, x: 0, y: 4)
-					.background(Color(colorScheme == .dark ? UIColor.secondarySystemBackground : UIColor.systemBackground))
+					.shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
+					.background(Color(UIColor.secondarySystemBackground))
 			#else
 				ToastView(toast: toast)
-					.shadow(color: Color(Color.black.opacity(0.08)), radius: 8, x: 0, y: 4)
-					.background(Color(NSColor.windowBackgroundColor))
+					.shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 4)
+					.background(Color.black)
 			#endif
 		}
 	}

@@ -136,8 +136,8 @@ struct FileViewerView: View {
 	#endif
 
 	@ToolbarContentBuilder private func toolbarContent(file: SushitrainEntry) -> some ToolbarContent {
-		if inSheet {
-			ToolbarItem(placement: .cancellationAction) {
+		ToolbarItemGroup(placement: .cancellationAction) {
+			if inSheet {
 				Button("Done") {
 					isShown = false
 				}

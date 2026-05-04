@@ -480,9 +480,11 @@ private struct ContentView: View {
 				.navigationBarTitleDisplayMode(.inline)
 			#endif
 			.toolbar {
-				if inSheet {
-					SheetButton(role: .done) {
-						showSearchSheet = false
+				ToolbarItem(placement: .cancellationAction) {
+					if inSheet {
+						Button("Done") {
+							showSearchSheet = false
+						}
 					}
 				}
 			}

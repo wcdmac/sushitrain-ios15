@@ -13,17 +13,22 @@ struct CompatContentUnavailableView: View {
 
 	var body: some View {
 		if #available(iOS 17, macOS 14, *) {
-			if let systemImage = systemImage, let description = description {
-				ContentUnavailableView(title, systemImage: systemImage, description: description)
-			} else if let systemImage = systemImage {
-				ContentUnavailableView(title, systemImage: systemImage)
-			} else if let description = description {
-				ContentUnavailableView(title, description: description)
-			} else {
-				ContentUnavailableView(title)
-			}
+			CompatContentUnavailableView._nativeBody(title: title, systemImage: systemImage, description: description)
 		} else {
 			fallbackView
+		}
+	}
+	
+	@available(iOS 17, macOS 14, *)
+	private static func _nativeBody(title: String, systemImage: String?, description: Text?) -> some View {
+		if let systemImage = systemImage, let description = description {
+			return AnyView(ContentUnavailableView(title, systemImage: systemImage, description: description))
+		} else if let systemImage = systemImage {
+			return AnyView(ContentUnavailableView(title, systemImage: systemImage, description: Text("")))
+		} else if let description = description {
+			return AnyView(ContentUnavailableView(title, description: description))
+		} else {
+			return AnyView(ContentUnavailableView(title))
 		}
 	}
 

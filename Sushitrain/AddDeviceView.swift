@@ -26,7 +26,7 @@ struct AddDeviceView: View {
 						IdenticonView(deviceID: deviceID).frame(width: 50)
 
 						TextField(
-							"", text: $deviceID, prompt: Text("XXXX-XXXX"), axis: .vertical
+							"", text: $deviceID, prompt: Text("XXXX-XXXX")
 						)
 						.focused($idFieldFocus)
 						#if os(iOS)
@@ -37,11 +37,13 @@ struct AddDeviceView: View {
 					}
 
 					#if os(iOS)
-						if DataScannerViewController.isSupported
-							&& DataScannerViewController.isAvailable
-						{
-							Button("Scan using camera...", systemImage: "qrcode") {
-								showQRScanner = true
+						if #available(iOS 16, *) {
+							if DataScannerViewController.isSupported
+								&& DataScannerViewController.isAvailable
+							{
+								Button("Scan using camera...", systemImage: "qrcode") {
+									showQRScanner = true
+								}
 							}
 						}
 					#endif

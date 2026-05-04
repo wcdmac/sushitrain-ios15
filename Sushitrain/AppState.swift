@@ -717,7 +717,7 @@ struct SyncState {
 
 		#if os(iOS)
 			DispatchQueue.main.async {
-				UNUserNotificationCenter.current().setBadgeCount(numTotal)
+				UIApplication.shared.compatSetBadgeCount(numTotal)
 			}
 		#elseif os(macOS)
 			let newBadge = numTotal > 0 ? String(numTotal) : ""

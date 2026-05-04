@@ -397,6 +397,12 @@ enum PhotoBackupProgress {
 		self.lastSuccessfulChangeToken = nil
 	}
 
+	func compatResetChangeToken() {
+		if #available(iOS 16, *) {
+			self.lastSuccessfulChangeToken = nil
+		}
+	}
+
 	private nonisolated func backupAlbum(
 		appState: AppState,
 		album: PHAssetCollection,

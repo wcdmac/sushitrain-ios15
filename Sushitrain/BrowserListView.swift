@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2024-2025 Tommy van der Vorst
+// Copyright (C) 2024-2025 Tommy van der Vorst
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -170,14 +170,6 @@ struct EntryView: View {
 						NavigationLink(
 							destination: FileView(file: entry, showPath: self.folder == nil, siblings: siblings)
 						) { Label(entry.fileName(), systemImage: entry.systemImage) }
-					} preview: {
-						CompatNavigationStack {  // to force the image to take up all available space
-							VStack {
-								ThumbnailView(file: targetEntry, showFileName: false, showErrorMessages: false)
-									.frame(minWidth: 240, maxWidth: .infinity, minHeight: 320, maxHeight: .infinity)
-									.environmentObject(appState)  // Necessary because for some reason environment is not inherited
-							}
-						}
 					}
 				}
 			}
@@ -322,14 +314,6 @@ struct FileEntryLink<Content: View>: View {
 			Divider()
 
 			ItemSelectToggleView(file: entry)
-		} preview: {
-			CompatNavigationStack {  // to force the image to take up all available space
-				VStack {
-					ThumbnailView(file: entry, showFileName: false, showErrorMessages: false)
-						.frame(minWidth: 240, maxWidth: .infinity, minHeight: 320, maxHeight: .infinity)
-						.environmentObject(appState)  // Necessary because for some reason environment is not inherited
-				}
-			}
 		}
 		.task {
 			self.canPreview = entry.canPreview

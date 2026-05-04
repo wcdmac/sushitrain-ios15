@@ -39,6 +39,17 @@ extension String {
 			return result
 		}
 	}
+
+	func compatTrimmingPrefix(_ prefix: String) -> String.SubSequence {
+		if #available(iOS 16, macOS 13, *) {
+			return self.trimmingPrefix(prefix)
+		} else {
+			if self.hasPrefix(prefix) {
+				return self[self.index(self.startIndex, offsetBy: prefix.count)...]
+			}
+			return self[...]
+		}
+	}
 }
 
 extension UIApplication {

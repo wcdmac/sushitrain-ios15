@@ -241,7 +241,7 @@ private struct PhotoFolderAlbumSettingsView: View {
 					PhotoBackupTimeZoneView(
 						timeZone: Binding(
 							get: {
-								self.config.timeZone ?? PhotoBackupTimeZone.specific(timeZone: TimeZone.gmt.identifier)
+								self.config.timeZone ?? PhotoBackupTimeZone.specific(timeZone: TimeZone(secondsFromGMT: 0)!.identifier)
 							},
 							set: {
 								self.config.timeZone = $0

@@ -10,6 +10,7 @@ import UniformTypeIdentifiers
 import AppIntents
 
 @available(iOS 16, macOS 13, *)
+@available(iOS 16, macOS 13, *)
 private enum IntentHandlingError: LocalizedError {
 	case appStartupFailed(String)
 	case unsupported(String)
@@ -31,6 +32,7 @@ private enum IntentHandlingError: LocalizedError {
 }
 
 extension AppState {
+	@available(iOS 16, macOS 13, *)
 	fileprivate func waitForAppStarted() async throws {
 		do {
 			while self.startupState != .started {
@@ -130,7 +132,7 @@ struct GenerateThumbnailsIntent: AppIntent {
 				}
 
 				group.addTask {
-					try await compatTaskSleep(seconds: self.time)
+					try await compatTaskSleep(seconds: Double(self.time))
 				}
 
 				defer { group.cancelAll() }
@@ -164,7 +166,7 @@ struct SynchronizeIntent: AppIntent {
 			try await appState.waitForAppStarted()
 			await appState.awake()
 			do {
-				try await compatTaskSleep(seconds: self.time)
+				try await compatTaskSleep(seconds: Double(self.time))
 			}
 			catch {
 				await appState.sleep()
@@ -185,11 +187,11 @@ enum FileEntityQueryPredicate {
 
 @available(iOS 16, macOS 13, *)
 struct FileEntityQuery: EntityQuery, EntityPropertyQuery {
-	static let sortingOptions = SortingOptions {
+	nonisolated(unsafe) static let sortingOptions = SortingOptions {
 		SortableBy(\FileEntity.$name)
 	}
 
-	static let properties = QueryProperties {
+	nonisolated(unsafe) static let properties = QueryProperties {
 		Property(\.$name) {
 			ContainsComparator { FileEntityQueryPredicate.fileNameContains($0) }
 		}

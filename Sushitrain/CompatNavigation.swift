@@ -93,7 +93,7 @@ struct CompatNavigationDestinationItemModifier<Item: Hashable, Destination: View
 	@ViewBuilder let destination: (Item) -> Destination
 
 	func body(content: Content) -> some View {
-		if #available(iOS 16, macOS 13, *) {
+		if #available(iOS 17, macOS 14, *) {
 			content.navigationDestination(item: $item) { value in
 				destination(value)
 			}

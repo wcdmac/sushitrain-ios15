@@ -50,11 +50,13 @@ struct TotalStatisticsView: View {
 						Text("First time").badge(
 							Date(timeIntervalSinceReferenceDate: appState.userSettings.firstRunAt).formatted(
 								date: .abbreviated, time: .omitted))
-						let durationInterval = Date.now.timeIntervalSince(Date(timeIntervalSinceReferenceDate: appState.userSettings.firstRunAt))
-					let durationFormatter = DateComponentsFormatter()
-					durationFormatter.allowedUnits = [.day, .hour, .minute]
-					durationFormatter.unitsStyle = .abbreviated
-					Text("Used for").badge(durationFormatter.string(from: durationInterval) ?? "")
+						Text("Used for").badge({
+						let interval = Date.now.timeIntervalSince(Date(timeIntervalSinceReferenceDate: appState.userSettings.firstRunAt))
+						let formatter = DateComponentsFormatter()
+						formatter.allowedUnits = [.day, .hour, .minute]
+						formatter.unitsStyle = .abbreviated
+						return formatter.string(from: interval) ?? ""
+					}())
 					}
 				}
 			}

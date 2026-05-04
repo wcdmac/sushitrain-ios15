@@ -83,7 +83,7 @@ struct ExternalSharingEncrypted: Equatable, Hashable, Codable {
 				let queryItems = [
 					URLQueryItem(
 						name: "url",
-						value: URL(string: blobURL)?.appending(
+						value: URL(string: blobURL)?.compatAppending(
 							path: "E.syncthing-enc/NC/RYPTED"
 						).absoluteString ?? ""),
 					URLQueryItem(name: "key", value: "FILEKEY"),
@@ -108,7 +108,7 @@ struct ExternalSharingUnencrypted: Equatable, Hashable, Codable {
 	func urlForFile(path: String, isDirectory: Bool) -> URL? {
 		if let root = URL(string: url) {
 			if path.hasPrefix(self.prefix) {
-				let strippedPath = path.dropFirst(self.prefix.count)
+				let strippedPath = String(path.dropFirst(self.prefix.count))
 				return root.compatAppending(path: strippedPath)
 			}
 		}

@@ -590,7 +590,7 @@ struct StartView: View {
 	@ViewBuilder private func gettingStartedFolders() -> some View {
 		Section("Getting started") {
 			VStack(alignment: .leading, spacing: 5) {
-				Label("Add your first folder", systemImage: "folder.badge.plus").fontWeight(.bold)
+				Label("Add your first folder", systemImage: "folder.badge.plus").font(.system(.body, weight: .bold))
 				Text(
 					"To synchronize files, add a folder. Folders that have the same folder ID on multiple devices will be synchronized with eachother."
 				)
@@ -610,7 +610,7 @@ struct StartView: View {
 		Section("Getting started") {
 			VStack(alignment: .leading, spacing: 5) {
 				Label("Add your first device", systemImage: "externaldrive.badge.plus")
-					.fontWeight(.bold)
+					.font(.system(.body, weight: .bold))
 				Text(
 					"To synchronize files, first add a remote device. Either select a device from the list below, or add manually using the device ID."
 				)
@@ -656,7 +656,7 @@ struct StartView: View {
 							"All devices are paused",
 							systemImage: "exclamationmark.triangle.fill"
 						)
-						.fontWeight(.bold)
+						.font(.system(.body, weight: .bold))
 						.foregroundStyle(.orange)
 						Text(
 							"Synchronization is disabled for all associated devices. To restart synchronization, re-enable synchronization on the 'devices' page, or tap here to enable all devices."
@@ -824,7 +824,7 @@ private struct DiskSpaceWarningView: View {
 	var body: some View {
 		VStack(alignment: .leading, spacing: 5) {
 			Label("Insufficient storage space", systemImage: "externaldrive.fill.badge.exclamationmark")
-				.fontWeight(.bold)
+				.font(.system(.body, weight: .bold))
 				.foregroundStyle(.red)
 			if let b = diskSpaceFree {
 				Text("There is only \(formatter.string(fromByteCount: b)) of free storage space left on this device.")

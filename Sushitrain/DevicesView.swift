@@ -44,10 +44,12 @@ private struct DeviceMetricView: View {
 
 			case .lastSeenAgo:
 				if let secondsAgo = self.measurement, !secondsAgo.isNaN {
-					let formatter = DateComponentsFormatter()
-					formatter.allowedUnits = [.day, .hour, .minute, .second]
-					formatter.unitsStyle = .abbreviated
-					Text(formatter.string(from: secondsAgo) ?? "")
+					Text({
+						let formatter = DateComponentsFormatter()
+						formatter.allowedUnits = [.day, .hour, .minute, .second]
+						formatter.unitsStyle = .abbreviated
+						return formatter.string(from: secondsAgo) ?? ""
+					}())
 				}
 				else {
 					EmptyView()
@@ -176,7 +178,7 @@ struct LatencyView: View {
 
 	var body: some View {
 		if !latency.isNaN {
-			Image(systemName: "cellularbars", variableValue: self.quality).foregroundStyle(.green)
+			Image(systemName: "cellularbars").foregroundStyle(.green)
 		}
 		else {
 			EmptyView()

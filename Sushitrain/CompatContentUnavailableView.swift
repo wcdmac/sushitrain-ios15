@@ -11,12 +11,6 @@ struct CompatContentUnavailableView: View {
 		self.description = description
 	}
 
-	init(_ title: String, systemImage: String? = nil, description: String? = nil) {
-		self.title = title
-		self.systemImage = systemImage
-		self.description = description.map { Text($0) }
-	}
-
 	var body: some View {
 		if #available(iOS 17, macOS 14, *) {
 			if let systemImage = systemImage, let description = description {

@@ -138,7 +138,7 @@ struct FileViewerView: View {
 	@ToolbarContentBuilder private func toolbarContent(file: SushitrainEntry) -> some ToolbarContent {
 		if inSheet {
 			ToolbarItem(placement: .cancellationAction) {
-				SheetButton(role: .done) {
+				Button("Done") {
 					isShown = false
 				}
 			}
@@ -240,7 +240,7 @@ private struct FileViewerContentView: View {
 							.opacity(0.5)
 							.blur(radius: 10.0)
 							ProgressView()
-								.progressViewStyle(.circular).controlSize(.extraLarge)
+								.progressViewStyle(.circular).controlSize(.large)
 						}
 					}
 				}

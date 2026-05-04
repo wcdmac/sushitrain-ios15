@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2024 Tommy van der Vorst
+// Copyright (C) 2024 Tommy van der Vorst
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -169,8 +169,8 @@ struct FileView: View {
 
 			.toolbar {
 				// Next/previous buttons
-				if let selfIndex = selfIndex, let siblings = siblings {
-					ToolbarItemGroup(placement: .navigation) {
+				ToolbarItemGroup(placement: .navigation) {
+					if let selfIndex = selfIndex, let siblings = siblings {
 						Button("Previous", systemImage: "chevron.up") { next(-1) }.keyboardShortcut(KeyEquivalent.upArrow)  // Cmd-up
 							.disabled(selfIndex < 1)
 
@@ -232,7 +232,9 @@ struct FileView: View {
 
 	@ViewBuilder private func shareButton() -> some View {
 		if file.isLocallyPresent() {
-			FileShareLink(file: file)
+			if #available(iOS 16, *) {
+				FileShareLink(file: file)
+			}
 		}
 		else {
 			Button("Share", systemImage: "square.and.arrow.up") {
@@ -776,7 +778,7 @@ private struct DownloadProgressView: View {
 			else {
 				Label("Waiting to synchronize...", systemImage: "hourglass")
 			}
-		}.task { self.updateProgress() }.onChange(of: self.appState.eventCounter) { self.updateProgress() }
+		}.task { self.updateProgress() }.onChange(of: self.appState.eventCounter) { _ in self.updateProgress() }
 	}
 
 	private func updateProgress() {
@@ -835,7 +837,7 @@ struct FileSharingLinksView: View {
 					}.buttonStyle(.link)
 				#endif
 			}.task { await self.update() }
-				.onChange(of: entry) { Task { await self.update() } }
+				.onChange(of: entry) { _ in Task { await self.update() } }
 		}
 	}
 }

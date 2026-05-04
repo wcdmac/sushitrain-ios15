@@ -561,12 +561,11 @@ enum PhotoBackupProgress {
 					let liveInFolderPath = asset.livePhotoPathInFolder(
 						structure: structure, subdirectoryPath: subDirectoryPath, timeZone: timeZone,
 						replaceExtension: livePhotoReplaceExtension)
-					let liveDirectoryURL = folderURL.appending(
+					let liveDirectoryURL = folderURL.compatAppending(
 						path: asset.livePhotoDirectoryPathInFolder(
 							structure: structure, subdirectoryPath: subDirectoryPath, timeZone: timeZone
 						)
-						.pathInFolder,
-						directoryHint: .isDirectory)
+						.pathInFolder)
 					try FileManager.default.createDirectory(at: liveDirectoryURL, withIntermediateDirectories: true)
 					let liveFileURL = folderURL.compatAppending(path: liveInFolderPath.pathInFolder)
 					Log.info("Found live photo \(asset.originalFilename) \(liveInFolderPath)")

@@ -773,7 +773,7 @@ struct LatencyView: View {
 						if let c = self.completion {
 							Text(localFormattedPercentage(Double(c.completionPct) / 100.0)).foregroundStyle(
 								c.completionPct < 100 ? .red : .primary
-							).bold(
+							).compatBold(
 								c.completionPct < 100
 							).help(
 								c.completionPct < 100
@@ -785,7 +785,7 @@ struct LatencyView: View {
 					if isShared {
 						if let c = self.completion {
 							Text(c.needBytes.formatted(.byteCount(style: .file))).foregroundStyle(c.completionPct < 100 ? .red : .primary)
-								.bold(c.completionPct < 100).help(
+								.compatBold(c.completionPct < 100).help(
 									c.completionPct < 100
 										? "This device still needs \(c.needBytes.formatted(.byteCount(style: .file))) of \(c.globalBytes.formatted(.byteCount(style: .file)))"
 										: "This device has a copy of all items")

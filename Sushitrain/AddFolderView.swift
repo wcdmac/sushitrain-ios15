@@ -152,7 +152,7 @@ struct AddFolderView: View {
 					peer.displayName, systemImage: peer.systemImage,
 					isOn: shared
 				)
-				.bold(isOffered)
+				.compatBold(isOffered)
 				.foregroundStyle(isOffered ? .blue : .primary)
 				.disabled(peer.isUntrusted())
 			}

@@ -16,11 +16,11 @@ struct CompatContentUnavailableView: View {
 			if let systemImage = systemImage, let description = description {
 				ContentUnavailableView(title, systemImage: systemImage, description: description)
 			} else if let systemImage = systemImage {
-				ContentUnavailableView(title, systemImage: systemImage)
+				ContentUnavailableView(title, systemImage: systemImage, description: Text(""))
 			} else if let description = description {
-				ContentUnavailableView(title, description: description)
+				ContentUnavailableView(title, systemImage: "questionmark", description: description)
 			} else {
-				ContentUnavailableView(title)
+				ContentUnavailableView(title, systemImage: "questionmark", description: Text(""))
 			}
 		} else {
 			fallbackView

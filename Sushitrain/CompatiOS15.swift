@@ -43,11 +43,7 @@ extension String {
 
 extension UIApplication {
 	func compatSetBadgeCount(_ count: Int) {
-		if #available(iOS 16, *) {
-			self.setBadgeCount(count)
-		} else {
-			UIApplication.shared.applicationIconBadgeNumber = count
-		}
+		UIApplication.shared.applicationIconBadgeNumber = count
 	}
 }
 
@@ -58,6 +54,24 @@ struct CompatCachesDirectory {
 
 func compatCachesDirectory() -> URL {
 	return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+}
+
+extension View {
+	func compatBold(_ isActive: Bool = true) -> some View {
+		if #available(iOS 16, macOS 13, *) {
+			return self.bold(isActive)
+		} else {
+			return self.font(isActive ? .body.bold() : .body)
+		}
+	}
+
+	func compatMonospaced() -> some View {
+		if #available(iOS 16.4, macOS 13.3, *) {
+			return self.monospaced()
+		} else {
+			return self.font(.system(.body, design: .monospaced))
+		}
+	}
 }
 
 struct CompatLabeledContent<Label: View, Content: View>: View {

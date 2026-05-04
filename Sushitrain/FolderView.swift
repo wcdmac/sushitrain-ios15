@@ -775,12 +775,12 @@ struct ShareWithDeviceToggleView: View {
 
 			if showFolderName {
 				Toggle(folder.displayName, systemImage: "folder.fill", isOn: isSharedBinding)
-					.bold(isPending)
+					.compatBold(isPending)
 					.disabled(self.isShared == nil)
 			}
 			else {
 				Toggle(peer.displayName, systemImage: peer.systemImage, isOn: isSharedBinding)
-					.bold(isPending)
+					.compatBold(isPending)
 					.disabled(self.isShared == nil)
 			}
 

@@ -168,13 +168,12 @@ struct FileView: View {
 			}
 
 			.toolbar {
-				// Next/previous buttons
-				if let selfIndex = selfIndex, let siblings = siblings {
-					ToolbarItemGroup(placement: .navigation) {
-						Button("Previous", systemImage: "chevron.up") { next(-1) }.keyboardShortcut(KeyEquivalent.upArrow)  // Cmd-up
+				ToolbarItemGroup(placement: .navigation) {
+					if let selfIndex = selfIndex, let siblings = siblings {
+						Button("Previous", systemImage: "chevron.up") { next(-1) }.keyboardShortcut(KeyEquivalent.upArrow)
 							.disabled(selfIndex < 1)
 
-						Button("Next", systemImage: "chevron.down") { next(1) }.keyboardShortcut(KeyEquivalent.downArrow)  // Cmd-down
+						Button("Next", systemImage: "chevron.down") { next(1) }.keyboardShortcut(KeyEquivalent.downArrow)
 							.disabled(selfIndex >= siblings.count - 1)
 					}
 				}
@@ -752,8 +751,7 @@ private struct DownloadProgressView: View {
 				ProgressView(value: progress.percentage, total: 1.0) {
 					VStack {
 						HStack {
-							Label("Downloading file...", systemImage: "arrow.clockwise").foregroundStyle(.green).symbolEffect(
-								.pulse, value: date)
+							Label("Downloading file...", systemImage: "arrow.clockwise").foregroundStyle(.green)
 							Spacer()
 						}
 
@@ -779,7 +777,7 @@ private struct DownloadProgressView: View {
 			else {
 				Label("Waiting to synchronize...", systemImage: "hourglass")
 			}
-		}.task { self.updateProgress() }.onChange(of: self.appState.eventCounter) { self.updateProgress() }
+		}.task { self.updateProgress() }.onChange(of: self.appState.eventCounter) { _ in self.updateProgress() }
 	}
 
 	private func updateProgress() {
@@ -813,17 +811,28 @@ struct FileSharingLinksView: View {
 		if entry.hasExternalSharingURL {
 			Group {
 				if let link = linkToUse {
-					ShareLink(item: link) { Label("Share external link", systemImage: "link.circle") }
-						#if os(macOS)
-							.buttonStyle(.link)
-						#endif
+					if #available(iOS 16, macOS 13, *) {
+						ShareLink(item: link) { Label("Share external link", systemImage: "link.circle") }
+							#if os(macOS)
+								.buttonStyle(.link)
+							#endif
+					} else {
+						Button(action: {
+							let av = UIActivityViewController(activityItems: [link], applicationActivities: nil)
+							if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+							   let rootVC = windowScene.windows.first?.rootViewController {
+								rootVC.present(av, animated: true)
+							}
+						}) {
+							Label("Share external link", systemImage: "link.circle")
+						}
+					}
 				}
 				else {
 					EmptyView()
 				}
 
 				#if os(macOS)
-					// On macOS, the share sheet doesn't have an obvious 'copy URL' option
 					Button("Copy external link", systemImage: "link.circle") {
 						if let se = self.sharingLink {
 							writeURLToPasteboard(url: se)
@@ -834,7 +843,7 @@ struct FileSharingLinksView: View {
 					}.buttonStyle(.link)
 				#endif
 			}.task { await self.update() }
-				.onChange(of: entry) { Task { await self.update() } }
+				.onChange(of: entry) { _ in Task { await self.update() } }
 		}
 	}
 }
@@ -902,7 +911,7 @@ private struct StreamingURLView: View {
 						)
 					#endif
 
-					Text(self.url).monospaced().textSelection(.enabled)
+					Text(self.url).compatMonospaced().textSelection(.enabled)
 
 					Button("Copy to clipboard", systemImage: copied ? "checkmark.circle.dotted" : "doc.on.doc") {
 						writeTextToPasteboard(self.url)

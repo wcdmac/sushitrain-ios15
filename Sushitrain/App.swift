@@ -7,7 +7,9 @@ import SwiftUI
 @preconcurrency import SushitrainCore
 import BackgroundTasks
 import Combine
+#if canImport(AppIntents)
 @preconcurrency import AppIntents
+#endif
 
 @main
 struct SushitrainApp: App {
@@ -78,9 +80,11 @@ struct SushitrainApp: App {
 		self._appState = StateObject(wrappedValue: appState)
 		self.userSettings = appState.userSettings
 
+		#if canImport(AppIntents)
 		if #available(iOS 16, *) {
 			AppDependencyManager.shared.add(dependency: appState)
 		}
+		#endif
 		appState.isLoggingToFile = enableLoggingToFile
 		self.delegate = SushitrainDelegate(appState: appState)
 		client.delegate = self.delegate

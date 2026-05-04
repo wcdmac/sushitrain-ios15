@@ -48,11 +48,12 @@ struct CompatNavigationSplitView<Sidebar: View, Detail: View>: View {
 			NavigationSplitView(columnVisibility: Binding(
 				get: { columnVisibility.native },
 				set: { v in
-					switch v {
-					case .automatic: columnVisibility = .automatic
-					case .doubleColumn: columnVisibility = .doubleColumn
-					case .detailOnly: columnVisibility = .detailOnly
-					@unknown default: columnVisibility = .automatic
+					if v == .automatic {
+						columnVisibility = .automatic
+					} else if v == .doubleColumn {
+						columnVisibility = .doubleColumn
+					} else {
+						columnVisibility = .detailOnly
 					}
 				}
 			), sidebar: sidebar, detail: detail)

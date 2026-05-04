@@ -18,7 +18,6 @@ struct BrowserTableView: View {
 	@State private var sortOrder = [EntryComparator(order: .forward, sortBy: .name)]
 	@State private var entries: [SushitrainEntry] = []
 
-	@SceneStorage("BrowserTableViewConfig") private var columnCustomization: TableColumnCustomization<SushitrainEntry>
 	@Environment(\.openURL) private var openURL
 	@EnvironmentObject private var appState: AppState
 
@@ -56,7 +55,7 @@ struct BrowserTableView: View {
 			of: SushitrainEntry.self,
 			selection: self.$selection,
 			sortOrder: $sortOrder,
-			columnCustomization: $columnCustomization,
+			,
 			columns: {
 				// Name and icon
 				TableColumn("Name", sortUsing: EntryComparator(order: .forward, sortBy: .name)) {
@@ -65,7 +64,7 @@ struct BrowserTableView: View {
 						.environment(self.appState)  // Needed because for some reason it does not propagate
 				}
 				.defaultVisibility(.visible)
-				.customizationID("name")
+				
 
 				// File extension
 				TableColumn(
@@ -78,7 +77,7 @@ struct BrowserTableView: View {
 				}
 				.width(min: 32, max: 64)
 				.defaultVisibility(.hidden)
-				.customizationID("extension")
+				
 
 				// File size
 				TableColumn(
@@ -94,7 +93,7 @@ struct BrowserTableView: View {
 				.width(min: 100, max: 120)
 				.defaultVisibility(.hidden)
 				.alignment(.trailing)
-				.customizationID("size")
+				
 
 				// Last modified date
 				TableColumn(
@@ -110,7 +109,7 @@ struct BrowserTableView: View {
 				.width(min: 150, max: 180)
 				.defaultVisibility(.hidden)
 				.alignment(.leading)
-				.customizationID("lastModifiedDate")
+				
 
 			},
 			rows: {

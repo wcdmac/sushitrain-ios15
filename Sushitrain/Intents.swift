@@ -558,7 +558,7 @@ struct GetExtraneousFilesIntent: AppIntent {
 		if let folderPath = folderEntity.folder.localNativeURL {
 			return .result(
 				value: files.compactMap { path in
-					let fileURL = folderPath.appending(path: path)
+					let fileURL = folderPath.compatAppending(path: path)
 					return IntentFile(fileURL: fileURL)
 				})
 		}
@@ -584,7 +584,7 @@ struct GetNeededFilesIntent: AppIntent {
 		let folderPath = folderEntity.folder.localNativeURL!
 		return .result(
 			value: files.compactMap { path in
-				let fileURL = folderPath.appending(path: path)
+				let fileURL = folderPath.compatAppending(path: path)
 				return IntentFile(fileURL: fileURL)
 			})
 	}
@@ -609,7 +609,7 @@ struct GetRemoteNeededFilesIntent: AppIntent {
 		let folderPath = folderEntity.folder.localNativeURL!
 		return .result(
 			value: files.compactMap { path in
-				let fileURL = folderPath.appending(path: path)
+				let fileURL = folderPath.compatAppending(path: path)
 				return IntentFile(fileURL: fileURL)
 			})
 	}

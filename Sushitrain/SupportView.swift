@@ -203,7 +203,7 @@ private struct SupportBundleView: View {
 				let tempDir = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
 				let tempPath = tempDir.appending(
 					component: "Synctrain-support-bundle-\(ProcessInfo().globallyUniqueString).zip")
-				try self.appState.client.writeSupportBundle(tempPath.path(percentEncoded: false), appInfo: appBundleJSON)
+				try self.appState.client.writeSupportBundle(tempPath.compatPath(percentEncoded: false), appInfo: appBundleJSON)
 
 				DispatchQueue.main.async {
 					self.writingSupportBundle = false
@@ -617,7 +617,7 @@ struct TroubleshootingView: View {
 		self.hasLegacyDatabase = appState.client.hasLegacyDatabase()
 		self.hasMigratedLegacyDatabase = appState.client.hasMigratedLegacyDatabase()
 
-		let path = SushitrainApp.configDirectoryURL().appending(path: "index-v2", directoryHint: .isDirectory)
+		let path = SushitrainApp.configDirectoryURL().compatAppending(path: "index-v2")
 		do {
 			// Calculate database size
 			let fileManager = FileManager.default

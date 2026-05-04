@@ -341,7 +341,7 @@ enum ContinuedTaskType {
 					}
 
 					// Just give it some time
-					try await Task.sleep(for: .milliseconds(100))
+					try await Task.sleep(nanoseconds: 100_000_000)
 				}
 			}
 			catch {

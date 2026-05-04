@@ -305,7 +305,7 @@ private struct ExtraFileView: View {
 
 				Button("Show preview", systemImage: "text.page.badge.magnifyingglass") {
 					if let folderNativePath = folder.localNativeURL {
-						self.localItemURL = folderNativePath.appending(path: path)
+						self.localItemURL = folderNativePath.compatAppending(path: path)
 					}
 				}
 
@@ -361,7 +361,7 @@ private struct ExtraSubdirectoryView: View {
 			Divider()
 
 			Button(openInFilesAppLabel, systemImage: "arrow.up.forward.app") {
-				if let localURL = folder.localNativeURL?.appending(path: self.path, directoryHint: .isDirectory) {
+				if let localURL = folder.localNativeURL?.compatAppending(path: self.path) {
 					openURLInSystemFilesApp(url: localURL)
 				}
 			}

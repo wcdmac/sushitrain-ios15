@@ -7,7 +7,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 @preconcurrency import SushitrainCore
 
-extension SushitrainEntry: @retroactive Transferable {
+@available(iOS 16, *) extension SushitrainEntry: @retroactive Transferable {
 	static public var transferRepresentation: some TransferRepresentation {
 		FileRepresentation(exportedContentType: .data, exporting: Self.sentTransferredFile).exportingCondition {
 			!$0.isSymlink() && !$0.isDirectory() && !$0.isDeleted()
@@ -29,7 +29,7 @@ extension SushitrainEntry: @retroactive Transferable {
 		let tempDirPath = tempDir.appending(
 			component: "Downloads-\(ProcessInfo().globallyUniqueString)")
 		try FileManager.default.createDirectory(at: tempDirPath, withIntermediateDirectories: true)
-		let filePath = tempDirPath.appending(component: self.fileName())
+		let filePath = tempDirPath.compatAppending(component: self.fileName())
 
 		struct DownloadError: Error {
 			let message: String
@@ -68,14 +68,14 @@ extension SushitrainEntry: @retroactive Transferable {
 
 		let url = try await withCheckedThrowingContinuation { cont in
 			let dlg = DownloadDelegate(cont)
-			self.download(filePath.path(percentEncoded: false), delegate: dlg)
+			self.download(filePath.compatPath(percentEncoded: false), delegate: dlg)
 		}
 		Log.info("Returning sent transferred file at: \(url)")
 		return SentTransferredFile(url, allowAccessingOriginalFile: false)
 	}
 }
 
-struct FileShareLink: View {
+@available(iOS 16, *) struct FileShareLink: View {
 	let file: SushitrainEntry
 	@State private var image: AsyncImagePhase = .empty
 

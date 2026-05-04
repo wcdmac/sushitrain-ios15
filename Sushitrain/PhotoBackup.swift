@@ -271,7 +271,7 @@ enum PhotoBackupProgress {
 
 			// Check to see if anything changed at all
 			var onlyTheseLocalIdentifiers: Set<String>? = nil
-			let changeToken = PHPhotoLibrary.shared().currentChangeToken
+			let changeToken: PHPhotoLibraryChangeToken = PHPhotoLibrary.shared().currentChangeToken
 			Log.info("Current change token: \(changeToken)")
 			if let lastSuccessfulChangeToken = await self.lastSuccessfulChangeToken {
 				Log.info("Last change token: \(lastSuccessfulChangeToken)")
@@ -356,7 +356,7 @@ enum PhotoBackupProgress {
 		return self.photoBackupTask
 	}
 
-	private nonisolated func insertedOrUpdatedLocalIdentifiers(since: PHPersistentChangeToken, to: PHPersistentChangeToken)
+	@available(iOS 16, *) private nonisolated func insertedOrUpdatedLocalIdentifiers(since: PHPersistentChangeToken, to: PHPersistentChangeToken)
 		throws -> Set<String>
 	{
 		// See if there are changes at all
@@ -375,7 +375,7 @@ enum PhotoBackupProgress {
 		return changedIdentifiers
 	}
 
-	private var lastSuccessfulChangeToken: PHPersistentChangeToken? {
+	@available(iOS 16, *) private var lastSuccessfulChangeToken: PHPersistentChangeToken? {
 		get {
 			let ltd = self.lastSuccessfullChangeTokenData
 			if ltd.isEmpty {
@@ -396,7 +396,7 @@ enum PhotoBackupProgress {
 		}
 	}
 
-	func resetLastSuccessfulChangeToken() {
+	@available(iOS 16, *) func resetLastSuccessfulChangeToken() {
 		self.lastSuccessfulChangeToken = nil
 	}
 
@@ -461,7 +461,7 @@ enum PhotoBackupProgress {
 				// Determine target directory path
 				let assetDirectoryPath = asset.directoryPathInFolder(
 					structure: structure, subdirectoryPath: subDirectoryPath, timeZone: timeZone)
-				let dirInFolder = folderURL.appending(path: assetDirectoryPath.pathInFolder, directoryHint: .isDirectory)
+				let dirInFolder = folderURL.compatAppending(path: assetDirectoryPath.pathInFolder)
 				let inFolderPath = asset.pathInFolder(structure: structure, subdirectoryPath: subDirectoryPath, timeZone: timeZone)
 				Log.info("- \(inFolderPath) \(dirInFolder) \(subDirectoryPath)")
 
@@ -503,7 +503,7 @@ enum PhotoBackupProgress {
 				try FileManager.default.createDirectory(at: dirInFolder, withIntermediateDirectories: true)
 
 				// Save asset if it doesn't exist already locally
-				let fileURL = folderURL.appending(path: inFolderPath.pathInFolder, directoryHint: .notDirectory)
+				let fileURL = folderURL.compatAppending(path: inFolderPath.pathInFolder)
 				if !FileManager.default.fileExists(atPath: fileURL.path) || fullExport {
 					// If a video: queue video export session
 					if asset.mediaType == .video {
@@ -520,7 +520,7 @@ enum PhotoBackupProgress {
 							options.resizeMode = .none
 							options.deliveryMode = .highQualityFormat
 							options.isNetworkAccessAllowed = false
-							options.allowSecondaryDegradedImage = false
+							if #available(iOS 17, *) { options.allowSecondaryDegradedImage = false }
 							options.version = .current
 
 							PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { data, _, _, info in
@@ -533,7 +533,7 @@ enum PhotoBackupProgress {
 										if let cd = asset.creationDate {
 											try FileManager.default.setAttributes(
 												[FileAttributeKey.creationDate: cd, FileAttributeKey.modificationDate: cd],
-												ofItemAtPath: fileURL.path(percentEncoded: false))
+												ofItemAtPath: fileURL.compatPath(percentEncoded: false))
 										}
 
 										assetsSavedSuccessfully.append(asset)
@@ -568,7 +568,7 @@ enum PhotoBackupProgress {
 						.pathInFolder,
 						directoryHint: .isDirectory)
 					try FileManager.default.createDirectory(at: liveDirectoryURL, withIntermediateDirectories: true)
-					let liveFileURL = folderURL.appending(path: liveInFolderPath.pathInFolder, directoryHint: .notDirectory)
+					let liveFileURL = folderURL.compatAppending(path: liveInFolderPath.pathInFolder)
 					Log.info("Found live photo \(asset.originalFilename) \(liveInFolderPath)")
 
 					if !FileManager.default.fileExists(atPath: liveFileURL.path) {
@@ -715,7 +715,7 @@ enum PhotoBackupProgress {
 					if let cd = asset.creationDate {
 						try FileManager.default.setAttributes(
 							[FileAttributeKey.creationDate: cd, FileAttributeKey.modificationDate: cd],
-							ofItemAtPath: destURL.path(percentEncoded: false))
+							ofItemAtPath: destURL.compatPath(percentEncoded: false))
 					}
 				}
 				catch {
@@ -942,7 +942,7 @@ private struct EntryPath {
 	let url: URL
 
 	init(_ path: String = "", isDirectory: Bool) {
-		self.url = URL(filePath: "/" + path, directoryHint: isDirectory ? .isDirectory : .notDirectory)
+		self.url = URL(fileURLWithPath: "/" + path, isDirectory: isDirectory)
 	}
 
 	private init(url: URL) {
@@ -955,7 +955,7 @@ private struct EntryPath {
 
 	// Absolute path, not starting with a leading '/' (as accepted by SushitrainEntry.getFileInformation).
 	var pathInFolder: String {
-		return self.url.path(percentEncoded: false).withoutStartingSlash
+		return self.url.compatPath(percentEncoded: false).withoutStartingSlash
 	}
 }
 

@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+	AA0000012D0000000000AA01 /* CompatContentUnavailableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000012D0000000000AA02 /* CompatContentUnavailableView.swift */; };
+	AA0000012D0000000000AA03 /* CompatNavigation.swift in Sources */
+		AA0000012D0000000000AA05 /* CompatiOS15.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000012D0000000000AA06 /* CompatiOS15.swift */; }; = {isa = PBXBuildFile; fileRef = AA0000012D0000000000AA04 /* CompatNavigation.swift */
+		AA0000012D0000000000AA06 /* CompatiOS15.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompatiOS15.swift; sourceTree = "<group>"; };; };
 		6505643D2CA98930009FFFB9 /* GridFilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6505643C2CA9892D009FFFB9 /* GridFilesView.swift */; };
 		6505643F2CA98D22009FFFB9 /* ThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6505643E2CA98D1F009FFFB9 /* ThumbnailView.swift */; };
 		650615872C3B3676002B6EE6 /* BrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650615862C3B3676002B6EE6 /* BrowserView.swift */; };
@@ -26,7 +30,10 @@
 		6550DFE82D6A645300D8DCC9 /* EncryptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6550DFE72D6A644E00D8DCC9 /* EncryptionView.swift */; };
 		6551053A2D7CB0A700F96814 /* BrowserTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655105392D7CB0A300F96814 /* BrowserTableView.swift */; };
 		6551053C2D7D8F8E00F96814 /* BrowserListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6551053B2D7D8F8A00F96814 /* BrowserListView.swift */; };
-		656802662F13A59000C9FA5D /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656802652F13A58E00C9FA5D /* ToastView.swift */; };
+		656802662F13A59000C9FA5D /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000012D0000000000AA02 /* CompatContentUnavailableView.swift */,
+				AA0000012D0000000000AA04 /* CompatNavigation.swift */
+		AA0000012D0000000000AA06 /* CompatiOS15.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompatiOS15.swift; sourceTree = "<group>"; };,
+				656802652F13A58E00C9FA5D /* ToastView.swift */; };
 		656802682F389C9C00C9FA5D /* MaintenanceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656802672F389C9800C9FA5D /* MaintenanceManager.swift */; };
 		6575B3DF2C6012480057686E /* ChangesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6575B3DE2C6012480057686E /* ChangesView.swift */; };
 		657603EF2D0457B400B36D78 /* Intents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657603EE2D0457B300B36D78 /* Intents.swift */; };
@@ -98,6 +105,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+	AA0000012D0000000000AA02 /* CompatContentUnavailableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompatContentUnavailableView.swift; sourceTree = "<group>"; };
+	AA0000012D0000000000AA04 /* CompatNavigation.swift */
+		AA0000012D0000000000AA06 /* CompatiOS15.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompatiOS15.swift; sourceTree = "<group>"; }; = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompatNavigation.swift; sourceTree = "<group>"; };
 		6505643C2CA9892D009FFFB9 /* GridFilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridFilesView.swift; sourceTree = "<group>"; };
 		6505643E2CA98D1F009FFFB9 /* ThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailView.swift; sourceTree = "<group>"; };
 		650615862C3B3676002B6EE6 /* BrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserView.swift; sourceTree = "<group>"; };
@@ -117,7 +127,10 @@
 		6550DFE72D6A644E00D8DCC9 /* EncryptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionView.swift; sourceTree = "<group>"; };
 		655105392D7CB0A300F96814 /* BrowserTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserTableView.swift; sourceTree = "<group>"; };
 		6551053B2D7D8F8A00F96814 /* BrowserListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserListView.swift; sourceTree = "<group>"; };
-		656802652F13A58E00C9FA5D /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		AA0000012D0000000000AA02 /* CompatContentUnavailableView.swift */,
+				AA0000012D0000000000AA04 /* CompatNavigation.swift */
+		AA0000012D0000000000AA06 /* CompatiOS15.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompatiOS15.swift; sourceTree = "<group>"; };,
+				656802652F13A58E00C9FA5D /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		656802672F389C9800C9FA5D /* MaintenanceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaintenanceManager.swift; sourceTree = "<group>"; };
 		6575B3DE2C6012480057686E /* ChangesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangesView.swift; sourceTree = "<group>"; };
 		657603EE2D0457B300B36D78 /* Intents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Intents.swift; sourceTree = "<group>"; };
@@ -263,6 +276,9 @@
 				65C9E1462C3DB67C00EDCE6C /* Sushitrain.entitlements */,
 				65A3D2212CCEEEA200117501 /* ThumbnailImage.swift */,
 				6505643E2CA98D1F009FFFB9 /* ThumbnailView.swift */,
+				AA0000012D0000000000AA02 /* CompatContentUnavailableView.swift */,
+				AA0000012D0000000000AA04 /* CompatNavigation.swift */
+		AA0000012D0000000000AA06 /* CompatiOS15.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompatiOS15.swift; sourceTree = "<group>"; };,
 				656802652F13A58E00C9FA5D /* ToastView.swift */,
 				65F15C002CA06B2100E13DDD /* UploadsView.swift */,
 				65AE12622C3AF50900E721D4 /* Utils.swift */,

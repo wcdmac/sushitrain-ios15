@@ -573,7 +573,7 @@ extension SushitrainChange: @retroactive Identifiable {
 }
 
 #if os(iOS)
-	struct QRScannerViewRepresentable: UIViewControllerRepresentable {
+	@available(iOS 16, *) struct QRScannerViewRepresentable: UIViewControllerRepresentable {
 		@Binding var scannedText: String
 		@Binding var shouldStartScanning: Bool
 		var dataToScanFor: Set<DataScannerViewController.RecognizedDataType>
@@ -1144,7 +1144,7 @@ extension URL {
 	// disallow us from accessing the folder while the device is locked
 	func hasUnsupportedProtection() -> Bool {
 		#if os(iOS)
-			let unsupportedProtection = Set<URLFileProtection>([.complete, .completeWhenUserInactive])
+			let unsupportedProtection: Set<URLFileProtection> = { if #available(iOS 17, *) { return [.complete, .completeWhenUserInactive] } else { return [.complete] } }()
 		#else
 			let unsupportedProtection = Set<URLFileProtection>([.complete])
 		#endif
@@ -1169,11 +1169,11 @@ extension URL {
 
 extension FileManager {
 	nonisolated func sizeOfFolder(path: URL) async throws -> UInt {
-		let files = try self.subpathsOfDirectory(atPath: path.path(percentEncoded: false))
+		let files = try self.subpathsOfDirectory(atPath: path.compatPath(percentEncoded: false))
 		var totalSize: UInt = 0
 		for file in files {
 			let filePath = path.appendingPathComponent(file)
-			let fileDictionary = try self.attributesOfItem(atPath: filePath.path(percentEncoded: false))
+			let fileDictionary = try self.attributesOfItem(atPath: filePath.compatPath(percentEncoded: false))
 			if let size = fileDictionary[FileAttributeKey.size] as? UInt {
 				totalSize += size
 			}

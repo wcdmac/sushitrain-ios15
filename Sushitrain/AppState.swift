@@ -226,7 +226,7 @@ struct SyncState {
 				if let bm = try BookmarkManager.shared.resolveBookmark(folderID: folderID) {
 					Log.info("We have a bookmark for folder \(folderID): \(bm)")
 					if let folder = client.folder(withID: folderID) {
-						let resolvedPath = bm.path(percentEncoded: false)
+						let resolvedPath = bm.compatPath(percentEncoded: false)
 						let oldPath = folder.path()
 						if oldPath != resolvedPath {
 							Log.info(
@@ -345,7 +345,7 @@ struct SyncState {
 			// We just came out of onboarding, update the version so it is not shown again
 			userSettings.forceOnboardingOnNextStartup = false
 			userSettings.onboardingVersionShown = Self.currentOnboardingVersion
-			try? await Task.sleep(for: .seconds(1))
+			try? await Task.sleep(nanoseconds: 1_000_000_000)
 		}
 
 		do {
@@ -901,8 +901,8 @@ struct SyncState {
 	}
 
 	func isInsideDocumentsFolder(_ url: URL) -> Bool {
-		return url.resolvingSymlinksInPath().path(percentEncoded: false)
-			.hasPrefix(documentsDirectory.resolvingSymlinksInPath().path(percentEncoded: false))
+		return url.resolvingSymlinksInPath().compatPath(percentEncoded: false)
+			.hasPrefix(documentsDirectory.resolvingSymlinksInPath().compatPath(percentEncoded: false))
 	}
 
 	static func requestNotificationPermissionIfNecessary() {

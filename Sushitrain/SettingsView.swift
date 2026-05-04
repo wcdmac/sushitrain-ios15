@@ -61,7 +61,7 @@ import SushitrainCore
 				Section {
 					HStack {
 						if let p = currentPath {
-							Text(p.path(percentEncoded: false))
+							Text(p.compatPath(percentEncoded: false))
 								.frame(maxWidth: .infinity, alignment: .leading)
 								.multilineTextAlignment(.leading)
 							Button(

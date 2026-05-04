@@ -14,7 +14,7 @@ private struct GridItemView: View {
 		ZStack(alignment: .topTrailing) {
 			Rectangle()
 				.frame(width: size, height: size)
-				.backgroundStyle(Color.primary)
+				
 				.opacity(0.05)
 
 			ThumbnailView(file: file, showFileName: true, showErrorMessages: false)
@@ -49,14 +49,7 @@ struct GridScrollView<HeaderContent: View, Content: View>: View {
 						#endif
 				}
 				.highPriorityGesture(magnification)
-				.accessibilityZoomAction { action in
-					switch action.direction {
-					case .zoomIn:
-						userSettings.browserGridColumns -= 1
-
-					case .zoomOut:
-						userSettings.browserGridColumns += 1
-					}
+				
 					userSettings.browserGridColumns = min(maxColumns, max(minColumns, userSettings.browserGridColumns))
 				}
 			}

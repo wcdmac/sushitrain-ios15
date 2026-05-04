@@ -57,7 +57,7 @@ extension SushitrainFolder {
 	}
 }
 
-struct FolderProgressChartView: View {
+@available(iOS 16, *) struct FolderProgressChartView: View {
 	let statistics: SushitrainFolderStats
 	let completions: [String: SushitrainCompletion] = [:]
 
@@ -190,7 +190,7 @@ struct FolderStatisticsView: View {
 			}
 			else if let stats = self.statistics {
 				if !self.allDevices.isEmpty {
-					FolderProgressChartView(statistics: stats, progressType: folder.isSelective() ? .stores : .needs).frame(height: 48)
+					if #available(iOS 16, *) { FolderProgressChartView(statistics: stats, progressType: folder.isSelective() ? .stores : .needs).frame(height: 48) } else { Text("Chart requires iOS 16+") }
 
 					// Global statistics
 					if let g = stats.global {

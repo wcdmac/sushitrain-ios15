@@ -480,7 +480,7 @@ private struct ExternalFolderSectionView: View {
 						do {
 							try? self.folder.setPaused(true)
 							try BookmarkManager.shared.saveBookmark(folderID: self.folder.folderID, url: url)
-							try folder.setPath(url.path(percentEncoded: false))
+							try folder.setPath(url.compatPath(percentEncoded: false))
 							try? self.folder.setPaused(false)
 						}
 						catch {
@@ -587,7 +587,7 @@ struct ExternalFolderInaccessibleView: View {
 						do {
 							try? self.folder.setPaused(true)
 							try BookmarkManager.shared.saveBookmark(folderID: self.folder.folderID, url: url)
-							try folder.setPath(url.path(percentEncoded: false))
+							try folder.setPath(url.compatPath(percentEncoded: false))
 							try? self.folder.setPaused(false)
 						}
 						catch {

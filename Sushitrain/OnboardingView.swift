@@ -34,7 +34,7 @@ private struct ChoiceView: View {
 			}.padding()
 		}
 		.background(isSelected ? Color.accentColor : Color.accentColor.opacity(0.075))
-		.clipShape(.rect(cornerRadius: 10))
+		.clipShape(RoundedRectangle(cornerRadius: 10))
 	}
 }
 
@@ -227,7 +227,7 @@ struct OnboardingView: View {
 			switch page {
 			case .start, .explainNoBackup, .explainResponsibility, .explainSyncthing:
 				OnboardingExplainView(page: page)
-					.transition(.push(from: .trailing))
+					.transition(.slide)
 					.onTapGesture {
 						// Scroll to the 'next' button when the user taps this (it may not be immediately obvious where
 						// the 'next' button is when people have very large text sizes)
@@ -238,7 +238,7 @@ struct OnboardingView: View {
 
 			case .privacyChoices:
 				PrivacyChoicesView(page: page, choice: $privacyChoice)
-					.transition(.push(from: .trailing))
+					.transition(.slide)
 					.onChange(of: privacyChoice) { _ in
 						// Scroll to the 'next' button when a privacy choice is selected
 						withAnimation {

@@ -53,7 +53,7 @@ private func fetchVideoThumbnail(url: URL, maxDimensionsInPixels: Int) async -> 
 			avAssetImageGenerator.appliesPreferredTrackTransform = true
 			let thumbnailTime = CMTimeMake(value: 2, timescale: 1)
 			do {
-				let (cgThumbImage, _) = try await avAssetImageGenerator.image(at: thumbnailTime)
+				let cgThumbImage = try avAssetImageGenerator.copyCGImage(at: thumbnailTime, actualTime: nil)
 				let thumbnailSize = CGSizeMake(
 					CGFloat(cgThumbImage.width), CGFloat(cgThumbImage.height)
 				)
@@ -205,7 +205,7 @@ struct ThumbnailImage<Content>: View where Content: View {
 			self.customCacheDirectory = nil
 
 		case .deviceLocal:
-			let folderSpecificPath = URL.cachesDirectory.appendingPathComponent("thumbnails", isDirectory: true)
+			let folderSpecificPath = compatCachesDirectory().appendingPathComponent("thumbnails", isDirectory: true)
 				.appendingPathComponent(folder.folderID, isDirectory: true)
 			self.customCacheDirectory = folderSpecificPath
 			self.diskCacheEnabled = true
@@ -223,7 +223,7 @@ struct ThumbnailImage<Content>: View where Content: View {
 		if let cc = self.customCacheDirectory {
 			return cc
 		}
-		return URL.cachesDirectory.appendingPathComponent("thumbnails", isDirectory: true)
+		return compatCachesDirectory().appendingPathComponent("thumbnails", isDirectory: true)
 	}
 
 	var diskHasSpace: Bool {
@@ -292,7 +292,7 @@ struct ThumbnailImage<Content>: View where Content: View {
 		}
 		self.cache.removeValue(forKey: cacheKey)
 		if self.diskCacheEnabled {
-			try FileManager.default.removeItem(atPath: self.pathFor(cacheKey: cacheKey).path(percentEncoded: false))
+			try FileManager.default.removeItem(atPath: self.pathFor(cacheKey: cacheKey).compatPath(percentEncoded: false))
 		}
 	}
 
@@ -308,7 +308,7 @@ struct ThumbnailImage<Content>: View where Content: View {
 
 			if self.diskCacheEnabled {
 				let url = self.pathFor(cacheKey: cacheKey)
-				let path = url.path(percentEncoded: false)
+				let path = url.compatPath(percentEncoded: false)
 				if FileManager.default.fileExists(atPath: path) {
 					#if os(iOS)
 						if let img = UIImage(contentsOfFile: path) {
@@ -355,7 +355,8 @@ struct ThumbnailImage<Content>: View where Content: View {
 
 	fileprivate func writeToDiskCache(image: Image, cacheKey: String) {
 		if diskCacheEnabled && diskHasSpace {
-			let renderer = ImageRenderer(content: image)
+			guard #available(iOS 16, macOS 13, *) else { return }
+		let renderer = ImageRenderer(content: image)
 			renderer.isOpaque = true
 			let isShared = self === Self.shared
 			Log.info("Writing to disk cache: shared=\(isShared) \(cacheKey) \(self.pathFor(cacheKey: cacheKey))")

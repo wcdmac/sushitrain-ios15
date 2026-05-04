@@ -182,7 +182,7 @@ private class PhotoFSAssetEntry: CustomFSEntry {
 		options.resizeMode = .none
 		options.deliveryMode = .highQualityFormat
 		options.isNetworkAccessAllowed = false
-		options.allowSecondaryDegradedImage = false
+		if #available(iOS 17, *) { options.allowSecondaryDegradedImage = false }
 		options.version = .current
 
 		var exported: Data? = nil
@@ -257,7 +257,7 @@ private class PhotoFSAlbumEntry: CustomFSEntry {
 			assets.enumerateObjects { asset, index, stop in
 				if asset.mediaType == .image {
 					structure.place(
-						asset: asset, root: fauxRoot, timeZone: self.config.timeZone ?? .specific(timeZone: TimeZone.gmt.identifier))
+						asset: asset, root: fauxRoot, timeZone: self.config.timeZone ?? .specific(timeZone: { if #available(iOS 16, *) { return TimeZone.gmt.identifier } else { return "GMT" } }()))
 				}
 			}
 

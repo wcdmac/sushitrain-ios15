@@ -431,7 +431,7 @@ private struct SelectiveFileView: View {
 		ZStack {
 			if let entry = entry {
 				if entry.isDeleted() {
-					Label(entry.fileName(), systemImage: entry.systemImage).strikethrough()
+					Label(entry.fileName(), systemImage: entry.systemImage).compatStrikethrough()
 				}
 				else if !entry.isExplicitlySelected() {
 					IntermediateSelectiveFileView(entry: entry, deselect: deselect)

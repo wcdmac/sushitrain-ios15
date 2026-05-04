@@ -44,8 +44,8 @@ struct SushitrainApp: App {
 		let configDirectory = Self.configDirectoryURL()
 		let documentsDirectory = try! FileManager.default.url(
 			for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-		let documentsPath = documentsDirectory.path(percentEncoded: false)
-		let configPath = configDirectory.path(percentEncoded: false)
+		let documentsPath = documentsDirectory.compatPath(percentEncoded: false)
+		let configPath = configDirectory.compatPath(percentEncoded: false)
 		let enableLoggingToFile = UserDefaults.standard.bool(forKey: "loggingEnabled")
 		registerPhotoFilesystem()
 		let client = SushitrainNewClient(configPath, documentsPath, enableLoggingToFile)!

@@ -94,7 +94,7 @@ struct AddFolderView: View {
 						"Existing folder: '\(u.lastPathComponent)'",
 						systemImage: "checkmark.circle.fill"
 					).contextMenu {
-						Text(u.path(percentEncoded: false))
+						Text(u.compatPath(percentEncoded: false))
 					}
 				}
 				else {
@@ -316,7 +316,7 @@ struct AddFolderView: View {
 
 					try appState.client.addFolder(
 						self.folderID,
-						folderPath: fp.path(percentEncoded: false),
+						folderPath: fp.compatPath(percentEncoded: false),
 						createAsOnDemand: self.isSelective && !isReceiveEncryptedFolder,
 						createAsReceiveEncrypted: isReceiveEncryptedFolder
 					)

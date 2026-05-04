@@ -132,10 +132,10 @@ struct EntryDownloaderView: View {
 					component: "Downloads-\(ProcessInfo().globallyUniqueString)")
 				try FileManager.default.createDirectory(
 					at: tempDirPath!, withIntermediateDirectories: true)
-				let filePath = tempDirPath!.appending(component: file.fileName())
+				let filePath = tempDirPath!.compatAppending(component: file.fileName())
 				self.filePath = filePath
 				self.file.download(
-					filePath.path(percentEncoded: false), delegate: self.downloadOperation)
+					filePath.compatPath(percentEncoded: false), delegate: self.downloadOperation)
 			}
 			catch {
 				downloadOperation.error = error.localizedDescription

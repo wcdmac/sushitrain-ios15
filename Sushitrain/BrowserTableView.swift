@@ -55,7 +55,6 @@ struct BrowserTableView: View {
 			of: SushitrainEntry.self,
 			selection: self.$selection,
 			sortOrder: $sortOrder,
-			,
 			columns: {
 				// Name and icon
 				TableColumn("Name", sortUsing: EntryComparator(order: .forward, sortBy: .name)) {

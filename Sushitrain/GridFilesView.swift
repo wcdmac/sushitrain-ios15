@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2024 Tommy van der Vorst
+// Copyright (C) 2024 Tommy van der Vorst
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -14,7 +14,6 @@ private struct GridItemView: View {
 		ZStack(alignment: .topTrailing) {
 			Rectangle()
 				.frame(width: size, height: size)
-				
 				.opacity(0.05)
 
 			ThumbnailView(file: file, showFileName: true, showErrorMessages: false)
@@ -49,11 +48,8 @@ struct GridScrollView<HeaderContent: View, Content: View>: View {
 						#endif
 				}
 				.highPriorityGesture(magnification)
-				
-					userSettings.browserGridColumns = min(maxColumns, max(minColumns, userSettings.browserGridColumns))
-				}
-			}
 		}
+	}
 	}
 
 	// Inspired by https://stackoverflow.com/a/73058175, CC-BY-SA 4.0

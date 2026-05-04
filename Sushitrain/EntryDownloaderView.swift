@@ -158,15 +158,11 @@ struct EntryDownloaderView: View {
 
 		case .share:
 			if #available(iOS 16, *) {
-
 				ShareLink(item: url)
-
 			}
 			if #available(iOS 17, *) {
 				Button("Save a copy...", systemImage: "square.and.arrow.down") {
 					showFileExporter = true
-				}
-				// fileMover requires iOS 17+
 				}
 			}
 		}

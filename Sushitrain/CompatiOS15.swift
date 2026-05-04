@@ -65,8 +65,6 @@ func compatCachesDirectory() -> URL {
 	}
 }
 
-import SwiftUI
-
 extension View {
     func compatStrikethrough() -> some View {
         if #available(iOS 16, macOS 13, *) {

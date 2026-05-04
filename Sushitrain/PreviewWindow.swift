@@ -44,7 +44,7 @@ import SwiftUI
 			.onAppear {
 				self.update()
 			}
-			.onChange(of: self.preview) {
+			.onChange(of: self.preview) { _ in
 				self.update()
 			}
 			.toolbarTitleDisplayMode(.inline)

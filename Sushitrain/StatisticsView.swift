@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2024 Tommy van der Vorst
+// Copyright (C) 2024 Tommy van der Vorst
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -50,9 +50,11 @@ struct TotalStatisticsView: View {
 						Text("First time").badge(
 							Date(timeIntervalSinceReferenceDate: appState.userSettings.firstRunAt).formatted(
 								date: .abbreviated, time: .omitted))
-						let durationSections = Duration.seconds(
-							Date.now.timeIntervalSince(Date(timeIntervalSinceReferenceDate: appState.userSettings.firstRunAt)))
-						Text("Used for").badge(durationSections.formatted())
+						let durationInterval = Date.now.timeIntervalSince(Date(timeIntervalSinceReferenceDate: appState.userSettings.firstRunAt))
+					let durationFormatter = DateComponentsFormatter()
+					durationFormatter.allowedUnits = [.day, .hour, .minute]
+					durationFormatter.unitsStyle = .abbreviated
+					Text("Used for").badge(durationFormatter.string(from: durationInterval) ?? "")
 					}
 				}
 			}

@@ -217,8 +217,8 @@ private struct PhotoFolderAlbumSettingsView: View {
 			}
 
 			Section {
-				LabeledContent {
-					TextField("", text: $dirName).monospaced().multilineTextAlignment(.trailing)
+				CompatLabeledContent {
+					TextField("", text: $dirName).compatMonospaced().multilineTextAlignment(.trailing)
 				} label: {
 					Text("To subdirectory")
 				}
@@ -234,7 +234,7 @@ private struct PhotoFolderAlbumSettingsView: View {
 
 				Text("Example file location in folder: ")
 					+ Text("\(dirName)/\((self.config.folderStructure ?? PhotoBackupFolderStructure.singleFolder).examplePath)")
-					.monospaced()
+					.compatMonospaced()
 			}
 
 			if self.config.folderStructure?.usesTimeZone ?? false {

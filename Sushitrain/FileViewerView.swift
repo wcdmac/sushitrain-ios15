@@ -137,11 +137,15 @@ struct FileViewerView: View {
 
 	@ToolbarContentBuilder private func toolbarContent(file: SushitrainEntry) -> some ToolbarContent {
 		if inSheet {
-			SheetButton(role: .done) {
-				isShown = false
+			ToolbarItem(placement: .cancellationAction) {
+				SheetButton(role: .done) {
+					isShown = false
+				}
 			}
+		}
 
-			#if os(macOS)
+		#if os(macOS)
+			if inSheet {
 				ToolbarItemGroup(placement: .automatic) {
 					Button(
 						"Open in new window",
@@ -159,10 +163,8 @@ struct FileViewerView: View {
 						}
 					}
 				}
-			#endif
-		}
+			}
 
-		#if os(macOS)
 			if let siblings = siblings, let selfIndex = selfIndex {
 				ToolbarItemGroup(placement: .automatic) {
 					Button("Previous", systemImage: "chevron.up") {
@@ -249,7 +251,7 @@ private struct FileViewerContentView: View {
 				}
 			}
 		}
-		.onChange(of: file) { (_, _) in
+		.onChange(of: file) { _ in
 			self.error = nil
 			self.loading = true
 		}
@@ -323,7 +325,7 @@ private struct FileMediaPlayer: View {
 		.onDisappear {
 			stopPlayer()
 		}
-		.onChange(of: file) {
+		.onChange(of: file) { _ in
 			Task {
 				await startPlayer()
 			}

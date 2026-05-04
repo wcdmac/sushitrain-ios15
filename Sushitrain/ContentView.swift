@@ -729,7 +729,7 @@ private struct StartOrSearchView: View {
 
 	var body: some View {
 		if #available(iOS 17, *) {
-			self.view().searchFocused($isSearchFieldFocused)
+			
 		}
 		else {
 			self.view()

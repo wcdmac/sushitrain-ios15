@@ -73,7 +73,7 @@ struct DeviceView: View {
 					}
 				}
 
-				LabeledContent {
+				CompatLabeledContent {
 					TextField(
 						"",
 						text: Binding(
@@ -132,7 +132,7 @@ struct DeviceView: View {
 							set: { trusted in try? device.setIntroducer(trusted) }))
 
 					if let introducedBy = device.introducedBy() {
-						LabeledContent("Introduced by") {
+						CompatLabeledContent("Introduced by") {
 							Text(introducedBy.displayName)
 						}
 					}
@@ -182,7 +182,7 @@ struct DeviceView: View {
 				if device.isConnected() {
 					if let latency = appState.client.measurements?.latency(for: device.deviceID()), !latency.isNaN {
 						Section {
-							LabeledContent("Latency") {
+							CompatLabeledContent("Latency") {
 								HStack {
 									Spacer()
 									Text("\(Int(latency * 1000)) ms")

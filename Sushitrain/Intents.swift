@@ -44,7 +44,7 @@ extension AppState {
 
 				// Just give it some time
 				Log.info("Waiting for client startup...")
-				try await Task.sleep(for: .milliseconds(100))
+				try await compatTaskSleep(milliseconds: 100)
 			}
 		}
 		catch {
@@ -133,7 +133,7 @@ struct GenerateThumbnailsIntent: AppIntent {
 				}
 
 				group.addTask {
-					try await Task.sleep(for: .seconds(self.time))
+					try await compatTaskSleep(seconds: self.time)
 				}
 
 				defer { group.cancelAll() }
@@ -167,7 +167,7 @@ struct SynchronizeIntent: AppIntent {
 			try await appState.waitForAppStarted()
 			await appState.awake()
 			do {
-				try await Task.sleep(for: .seconds(self.time))
+				try await compatTaskSleep(seconds: self.time)
 			}
 			catch {
 				await appState.sleep()
@@ -985,7 +985,7 @@ struct DownloadFilesIntent: AppIntent {
 								Log.info("Waiting for a peer to connect...")
 								firstTimeWaiting = true
 							}
-							try await Task.sleep(for: .milliseconds(200))
+							try await compatTaskSleep(milliseconds: 200)
 						}
 						else {
 							break

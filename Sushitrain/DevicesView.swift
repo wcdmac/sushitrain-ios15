@@ -40,11 +40,14 @@ private struct DeviceMetricView: View {
 				EmptyView()
 
 			case .shortID:
-				Text(self.device.shortDeviceID()).monospaced()
+				Text(self.device.shortDeviceID()).compatMonospaced()
 
 			case .lastSeenAgo:
 				if let secondsAgo = self.measurement, !secondsAgo.isNaN {
-					Text(Duration.seconds(secondsAgo).formatted())
+					let formatter = DateComponentsFormatter()
+					formatter.allowedUnits = [.day, .hour, .minute, .second]
+					formatter.unitsStyle = .abbreviated
+					Text(formatter.string(from: secondsAgo) ?? "")
 				}
 				else {
 					EmptyView()
@@ -362,7 +365,7 @@ struct LatencyView: View {
 				AddDeviceView(suggestedDeviceID: $addingDeviceID)
 			}.task {
 				await self.update()
-			}.onChange(of: appState.eventCounter) {
+			}.onChange(of: appState.eventCounter) { _ in
 				Task {
 					await self.update()
 				}
@@ -466,7 +469,7 @@ struct LatencyView: View {
 									HStack {
 										Image(systemName: "plus").foregroundStyle(Color.accentColor)
 
-										Text(SushitrainShortDeviceID(devID)).monospaced().foregroundStyle(Color.primary)
+										Text(SushitrainShortDeviceID(devID)).compatMonospaced().foregroundStyle(Color.primary)
 										Spacer()
 									}.frame(maxWidth: .infinity)
 								}
@@ -493,24 +496,24 @@ struct LatencyView: View {
 								// Short device ID
 								TableColumn("Short device ID") { (row: DevicesGridRow) in
 									switch row {
-									case .connectedDevice(let peer): Text(peer.shortDeviceID()).monospaced()
-									case .discoveredDevice(let s): Text(SushitrainShortDeviceID(s)).monospaced()
+									case .connectedDevice(let peer): Text(peer.shortDeviceID()).compatMonospaced()
+									case .discoveredDevice(let s): Text(SushitrainShortDeviceID(s)).compatMonospaced()
 									}
 								}.width(min: 80, ideal: 100).defaultVisibility(.automatic).customizationID("shortID")
 
 								// Long device ID
 								TableColumn("Device ID") { (row: DevicesGridRow) in
 									switch row {
-									case .connectedDevice(let peer): Text(peer.deviceID()).monospaced()
-									case .discoveredDevice(let s): Text(s).monospaced()
+									case .connectedDevice(let peer): Text(peer.deviceID()).compatMonospaced()
+									case .discoveredDevice(let s): Text(s).compatMonospaced()
 									}
 								}.width(min: 100, ideal: 520).defaultVisibility(.hidden).customizationID("longID")
 
 								// Last seen device address
 								TableColumn("Last address") { (row: DevicesGridRow) in
 									switch row {
-									case .connectedDevice(let peer): Text(self.appState.client.getLastPeerAddress(peer.deviceID())).monospaced()
-									case .discoveredDevice(let s): Text(self.appState.client.getLastPeerAddress(s)).monospaced()
+									case .connectedDevice(let peer): Text(self.appState.client.getLastPeerAddress(peer.deviceID())).compatMonospaced()
+									case .discoveredDevice(let s): Text(self.appState.client.getLastPeerAddress(s)).compatMonospaced()
 									}
 								}.width(min: 100, ideal: 200).defaultVisibility(.hidden).customizationID("lastAddress")
 
@@ -806,7 +809,7 @@ struct LatencyView: View {
 					ShareFolderWithDeviceDetailsView(folder: self.folder, deviceID: .constant(device.deviceID()))
 				}
 			}
-			.onChange(of: appState.eventCounter) {
+			.onChange(of: appState.eventCounter) { _ in
 				// Update on app events, but only the cheap updates, or while we're not already loading
 				if self.loadingTask == nil || self.viewStyle == .simple || self.viewStyle == .sharing {
 					Task {

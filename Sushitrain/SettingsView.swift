@@ -618,7 +618,7 @@ struct AdvancedSettingsView: View {
 							authorizationStatus != .authorized
 								&& authorizationStatus != .provisional
 						)
-						.onChange(of: userSettings.watchdogNotificationEnabled) {
+						.onChange(of: userSettings.watchdogNotificationEnabled) { _ in
 							self.updateNotificationStatus()
 						}
 
@@ -1165,7 +1165,7 @@ private struct AsyncAddressesView: View {
 			Toggle(isOn: $autoStart) {
 				Label("Launch at login", systemImage: "autostartstop")
 			}
-			.onChange(of: autoStart) { _, nv in
+			.onChange(of: autoStart) { nv in
 				if nv {
 					try? SMAppService.mainApp.register()
 				}

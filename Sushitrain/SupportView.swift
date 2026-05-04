@@ -105,7 +105,7 @@ private struct LogView: View {
 				.textSelection(.enabled)
 				.multilineTextAlignment(.leading)
 				.lineLimit(nil)
-				.monospaced()
+				.compatMonospaced()
 				.padding()
 				.fixedSize(horizontal: false, vertical: true)
 		}
@@ -163,8 +163,15 @@ private struct SupportBundleView: View {
 			#endif
 
 			if let s = supportBundle {
+					Label("Share information bundle for support", systemImage: "text.page.badge.magnifyingglass")
+				if #available(iOS 16, *) {
 				ShareLink(item: s, subject: Text("Support bundle"), message: Text("Support bundle"), preview: self.sharePreview()) {
 					Label("Share information bundle for support", systemImage: "text.page.badge.magnifyingglass")
+				}
+				} else {
+					Button("Share...") {
+						// Share not available on iOS 15
+					}
 				}
 				#if os(macOS)
 					.buttonStyle(.link)
@@ -415,7 +422,7 @@ struct TroubleshootingView: View {
 			}
 
 			Section {
-				LabeledContent("Database type") {
+				CompatLabeledContent("Database type") {
 					if hasLegacyDatabase {
 						// This shouldn't happen because either the migration fails or the app runs, but if it does happen
 						// we want to know (and therefore indicate it in the UI).
@@ -426,7 +433,7 @@ struct TroubleshootingView: View {
 					}
 				}
 
-				LabeledContent("Database size") {
+				CompatLabeledContent("Database size") {
 					if let size = self.databaseSize {
 						Text(Self.formatter.string(fromByteCount: size))
 					}
@@ -436,14 +443,14 @@ struct TroubleshootingView: View {
 				}
 
 				if appState.userSettings.migratedToV2At > 0.0 {
-					LabeledContent("Upgraded at") {
+					CompatLabeledContent("Upgraded at") {
 						Text(
 							Date(timeIntervalSinceReferenceDate: appState.userSettings.migratedToV2At).formatted(
 								date: .abbreviated, time: .shortened))
 					}
 				}
 
-				LabeledContent("Last maintenance") {
+				CompatLabeledContent("Last maintenance") {
 					if let time = appState.client.lastMaintenanceTime()?.date() {
 						Text(time.formatted(date: .abbreviated, time: .shortened))
 					}
@@ -523,7 +530,7 @@ struct TroubleshootingView: View {
 			}
 
 			Section("Cache directory") {
-				LabeledContent("Cache directory size") {
+				CompatLabeledContent("Cache directory size") {
 					if let size = self.cacheSize {
 						Text(Self.formatter.string(fromByteCount: size))
 					}
@@ -541,7 +548,7 @@ struct TroubleshootingView: View {
 			}
 
 			Section("Temporary files") {
-				LabeledContent("Temporary files size") {
+				CompatLabeledContent("Temporary files size") {
 					if let size = self.tempSize {
 						Text(Self.formatter.string(fromByteCount: size))
 					}

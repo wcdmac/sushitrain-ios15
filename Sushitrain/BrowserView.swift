@@ -1011,32 +1011,32 @@ private struct BrowserItemsView: View {
 		.task(id: self.folder.folderStateForUpdating) {
 			await self.reload()
 		}
-		.onChange(of: appState.userSettings.dotFilesHidden) {
+		.onChange(of: appState.userSettings.dotFilesHidden) { _ in
 			Task {
 				await self.reload()
 			}
 		}
-		.onChange(of: self.folder.folderStateForUpdating) {
+		.onChange(of: self.folder.folderStateForUpdating) { _ in
 			Task {
 				await self.reload()
 			}
 		}
-		.onChange(of: self.filterAvailability) {
+		.onChange(of: self.filterAvailability) { _ in
 			Task {
 				await self.reload()
 			}
 		}
-		.onChange(of: self.sortOrder) {
+		.onChange(of: self.sortOrder) { _ in
 			Task {
 				await self.reload()
 			}
 		}
-		.onChange(of: appState.eventCounter) {
+		.onChange(of: appState.eventCounter) { _ in
 			Task {
 				await self.updateExtraneousFiles()
 			}
 		}
-		.onChange(of: recursive) {
+		.onChange(of: recursive) { _ in
 			Task {
 				await self.reload()
 			}

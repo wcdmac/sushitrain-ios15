@@ -34,13 +34,13 @@ struct EncryptionView: View {
 		CompatNavigationStack {
 			Form {
 				Section("Get encrypted file details") {
-					LabeledContent {
-						TextField("", text: $folderPassword).monospaced()
+					CompatLabeledContent {
+						TextField("", text: $folderPassword).compatMonospaced()
 					} label: {
 						Text("Folder encryption password")
 					}
 
-					LabeledContent {
+					CompatLabeledContent {
 						Picker("", selection: $folderPassword) {
 							ForEach(self.encryptedPeers, id: \.0.id) { (peer, password) in
 								Text(peer.displayName).tag(password)
@@ -55,7 +55,7 @@ struct EncryptionView: View {
 
 				Section("Encrypted file path") {
 					Text(self.folderPassword.isEmpty ? "" : self.fileEncryptedPath)
-						.monospaced()
+						.compatMonospaced()
 						.textSelection(.enabled)
 
 					Button("Copy", systemImage: "document.on.document") {
@@ -69,7 +69,7 @@ struct EncryptionView: View {
 
 				Section("File encryption key") {
 					Text(self.folderPassword.isEmpty || self.fileKey.isEmpty ? "" : self.fileKey)
-						.monospaced()
+						.compatMonospaced()
 						.textSelection(.enabled)
 					Button("Copy", systemImage: "document.on.document") {
 						writeTextToPasteboard(self.fileKey)
@@ -83,7 +83,7 @@ struct EncryptionView: View {
 			.task {
 				await self.update()
 			}
-			.onChange(of: self.folderPassword) {
+			.onChange(of: self.folderPassword) { _ in
 				Task {
 					await self.update()
 				}
@@ -169,7 +169,7 @@ struct DecryptedFilePathsView: View {
 		.task {
 			await self.update()
 		}
-		.onChange(of: self.path) {
+		.onChange(of: self.path) { _ in
 			Task {
 				await self.update()
 			}

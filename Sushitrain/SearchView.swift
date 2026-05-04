@@ -76,7 +76,7 @@ struct SearchView: View {
 	var body: some View {
 		if #available(iOS 17, *) {
 			self.view
-				.searchFocused($isSearchFieldFocused)
+				
 				.onAppear {
 					isSearchFieldFocused = true
 					if searchText.isEmpty {
@@ -215,7 +215,7 @@ struct SearchResultsView: View, SearchViewDelegate {
 				}
 			}
 		}
-		.onChange(of: searchText) {
+		.onChange(of: searchText) { _ in
 			self.search()
 		}
 		.onDisappear {

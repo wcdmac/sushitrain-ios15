@@ -37,7 +37,7 @@ struct ShareFolderWithDeviceDetailsView: View {
 							#if os(iOS)
 								.textInputAutocapitalization(.never)
 							#endif
-							.monospaced()
+							.compatMonospaced()
 							.focused($passwordFieldFocus)
 					} header: {
 						Text("Encryption password")
@@ -293,10 +293,10 @@ struct FolderSyncTypePicker: View {
 
 			Text("Selected files").tag(FolderSyncType.selectedFiles)
 				.disabled(folder.isSendOnlyFolder || folder.isReceiveEncryptedFolder)
-				.selectionDisabled(folder.isSendOnlyFolder || folder.isReceiveEncryptedFolder)
+				.disabled(folder.isSendOnlyFolder || folder.isReceiveEncryptedFolder)
 
 			if folderSyncType == nil {
-				Text("(Unknown)").tag(nil as FolderSyncType?).disabled(true).selectionDisabled()
+				Text("(Unknown)").tag(nil as FolderSyncType?).disabled(true).disabled(true)
 			}
 		}
 		.onChange(of: folderSyncType) { ov, nv in
@@ -374,19 +374,19 @@ struct FolderDirectionPicker: View {
 						"Changes made on this device will be sent to other devices. Changes from other devices will not be accepted."
 					)
 					.disabled(folder.isSelective())
-					.selectionDisabled(folder.isSelective())
+					.disabled(folder.isSelective())
 
 				if folderType == nil {
 					Text("(Unknown)").tag(nil as String?)
 						.disabled(true)
-						.selectionDisabled()
+						.disabled(true)
 				}
 
 				if folderType == SushitrainFolderTypeReceiveEncrypted {
 					Text("Receive encrypted")
 						.tag(SushitrainFolderTypeReceiveEncrypted as String?)
 						.disabled(true)
-						.selectionDisabled()
+						.disabled(true)
 				}
 			}
 			.pickerStyle(.menu)
@@ -673,7 +673,7 @@ struct FolderView: View {
 				Section {
 					Text("Folder ID").badge(Text(folder.folderID))
 
-					LabeledContent {
+					CompatLabeledContent {
 						TextField(
 							"",
 							text: Binding(get: { folder.label() }, set: { lbl in try? folder.setLabel(lbl) }),
@@ -912,7 +912,7 @@ private struct FolderThumbnailSettingsView: View {
 				.pickerStyle(.menu)
 
 				if case ThumbnailGeneration.inside(_) = settings {
-					LabeledContent {
+					CompatLabeledContent {
 						TextField("", text: insidePathBinding, prompt: Text(ThumbnailGeneration.defaultInsideFolderThumbnailPath))
 							.multilineTextAlignment(.trailing)
 					} label: {
@@ -1297,7 +1297,7 @@ private struct AdvancedFolderSettingsView: View {
 
 			if !folder.isReceiveEncryptedFolder {
 				Section("File handling") {
-					LabeledContent {
+					CompatLabeledContent {
 						TextField(
 							"",
 							text: Binding(
@@ -1338,7 +1338,7 @@ private struct AdvancedFolderSettingsView: View {
 						isOn: Binding(get: { folder.isWatcherEnabled() }, set: { try? folder.setWatcherEnabled($0) }))
 
 					if folder.isWatcherEnabled() {
-						LabeledContent {
+						CompatLabeledContent {
 							TextField(
 								"",
 								text: Binding(

@@ -46,7 +46,7 @@ import SwiftUI
 					}
 				}
 				.statusBar(hidden: true)
-				.persistentSystemOverlays(.hidden)
+				
 				.onTapGesture {
 					isPresented = false
 				}
@@ -109,7 +109,7 @@ private struct OverallDownloadProgressView: View {
 									systemImage: "arrow.down"
 								)
 								.foregroundStyle(.green)
-								.symbolEffect(.pulse, value: date)
+								
 								.badge(localFormattedPercentage(Double(progress.percentage)))
 								.frame(maxWidth: .infinity)
 								Spacer()
@@ -131,7 +131,7 @@ private struct OverallDownloadProgressView: View {
 		.task {
 			await self.updateProgress()
 		}
-		.onChange(of: self.appState.eventCounter) {
+		.onChange(of: self.appState.eventCounter) { _ in
 			Task {
 				await self.updateProgress()
 			}
@@ -151,9 +151,14 @@ private struct OverallDownloadProgressView: View {
 				if speed > 0 && diffTime > 0 {
 					Text("\(formatter.string(fromByteCount: speed))/s")
 						.foregroundStyle(.green)
-					let secondsToGo = Duration(
-						secondsComponent: (progress.bytesTotal - progress.bytesDone) / speed, attosecondsComponent: 0)
-					let secondsToGoFormatted: String = secondsToGo.formatted(.time(pattern: .hourMinuteSecond(padHourToLength: 0)))
+					let secondsToGoInterval = TimeInterval((progress.bytesTotal - progress.bytesDone) / speed)
+					let secondsToGoFormatted: String = {
+						let formatter = DateComponentsFormatter()
+						formatter.allowedUnits = [.hour, .minute, .second]
+						formatter.unitsStyle = .positional
+						formatter.zeroFormattingBehavior = .pad
+						return formatter.string(from: secondsToGoInterval) ?? ""
+					}()
 					Text(secondsToGoFormatted).foregroundStyle(.green)
 				}
 				else {
@@ -288,7 +293,7 @@ private struct OverallUploadStatusView: View {
 						systemImage: "arrow.up"
 					)
 					.foregroundStyle(.green)
-					.symbolEffect(.pulse, value: progress.percentage)
+					
 					.badge(localFormattedPercentage(Double(progress.percentage)))
 					.frame(maxWidth: .infinity)
 				}.tint(.green)
@@ -498,7 +503,7 @@ struct StartView: View {
 				await self.update()
 			}
 		}
-		.onChange(of: showMaintenance) {
+		.onChange(of: showMaintenance) { _ in
 			Task {
 				await self.update()
 			}
@@ -585,7 +590,7 @@ struct StartView: View {
 	@ViewBuilder private func gettingStartedFolders() -> some View {
 		Section("Getting started") {
 			VStack(alignment: .leading, spacing: 5) {
-				Label("Add your first folder", systemImage: "folder.badge.plus").bold()
+				Label("Add your first folder", systemImage: "folder.badge.plus").fontWeight(.bold)
 				Text(
 					"To synchronize files, add a folder. Folders that have the same folder ID on multiple devices will be synchronized with eachother."
 				)
@@ -605,7 +610,7 @@ struct StartView: View {
 		Section("Getting started") {
 			VStack(alignment: .leading, spacing: 5) {
 				Label("Add your first device", systemImage: "externaldrive.badge.plus")
-					.bold()
+					.fontWeight(.bold)
 				Text(
 					"To synchronize files, first add a remote device. Either select a device from the list below, or add manually using the device ID."
 				)
@@ -651,7 +656,7 @@ struct StartView: View {
 							"All devices are paused",
 							systemImage: "exclamationmark.triangle.fill"
 						)
-						.bold()
+						.fontWeight(.bold)
 						.foregroundStyle(.orange)
 						Text(
 							"Synchronization is disabled for all associated devices. To restart synchronization, re-enable synchronization on the 'devices' page, or tap here to enable all devices."
@@ -819,7 +824,7 @@ private struct DiskSpaceWarningView: View {
 	var body: some View {
 		VStack(alignment: .leading, spacing: 5) {
 			Label("Insufficient storage space", systemImage: "externaldrive.fill.badge.exclamationmark")
-				.bold()
+				.fontWeight(.bold)
 				.foregroundStyle(.red)
 			if let b = diskSpaceFree {
 				Text("There is only \(formatter.string(fromByteCount: b)) of free storage space left on this device.")

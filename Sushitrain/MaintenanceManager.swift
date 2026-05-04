@@ -8,8 +8,8 @@ import SwiftUI
 
 @MainActor class MaintenanceManager {
 	// Interval for database maintenance
-	static var maintenanceInterval = Duration.seconds(60 * 60 * 24 * 7)
-	static var maintenanceWarningInterval = Duration.seconds(maintenanceInterval / Duration.seconds(1.0) * 1.5)
+	static var maintenanceInterval: TimeInterval = 60 * 60 * 24 * 7
+	static var maintenanceWarningInterval: TimeInterval = maintenanceInterval * 1.5
 
 	#if os(macOS)
 		static var maintenanceActivityIdentifier = "nl.t-shaped.Sushitrain.database-maintenance"
@@ -25,7 +25,7 @@ import SwiftUI
 		func scheduleDatabaseMaintenance() {
 			let lastMaintenance = self.appState.client.lastMaintenanceTime()?.date() ?? Date.now
 			var nextMaintenance = lastMaintenance.addingTimeInterval(
-				TimeInterval(Self.maintenanceInterval / Duration.seconds(1)))
+				Self.maintenanceInterval)
 
 			let margin = TimeInterval(10.0)
 			if nextMaintenance.timeIntervalSince(Date.now) < margin {
@@ -88,7 +88,7 @@ import SwiftUI
 		}
 
 		if let last = last {
-			return Date.now.timeIntervalSince(last) > (interval / Duration.seconds(1))
+			return Date.now.timeIntervalSince(last) > interval
 		}
 		return false
 	}

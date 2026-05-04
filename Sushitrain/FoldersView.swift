@@ -20,7 +20,7 @@ private struct FolderMetricView: View {
 				.task {
 					await self.updateMetric()
 				}
-				.onChange(of: appState.eventCounter) {
+				.onChange(of: appState.eventCounter) { _ in
 					Task {
 						await self.updateMetric()
 					}
@@ -192,7 +192,7 @@ struct FoldersSections: View {
 		.task {
 			await self.update()
 		}
-		.onChange(of: appState.eventCounter) {
+		.onChange(of: appState.eventCounter) { _ in
 			Task {
 				await self.update()
 			}

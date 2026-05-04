@@ -209,7 +209,7 @@ enum ContinuedTaskType {
 							if stopWhenFinished && appState.isFinished {
 								// Wait another second to see if we're still finished
 								continuedTask.updateTitle(continuedTask.title, subtitle: String(localized: "Finishing up..."))
-								try await Task.sleep(for: .seconds(1))
+								try await compatTaskSleep(seconds: 1)
 								if appState.isFinished {
 									shouldContinue = false
 									continuedTask.updateTitle(continuedTask.title, subtitle: String(localized: "Finished"))
@@ -229,7 +229,7 @@ enum ContinuedTaskType {
 								continuedTask.progress.totalUnitCount = Int64(duration)
 								continuedTask.progress.completedUnitCount = Int64(Date.now.timeIntervalSince(start))
 								continuedTask.updateTitle(continuedTask.title, subtitle: subtitle)
-								try await Task.sleep(for: .seconds(1))
+								try await compatTaskSleep(seconds: 1)
 							}
 						}
 					}

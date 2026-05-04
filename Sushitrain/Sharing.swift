@@ -54,7 +54,7 @@ import UniformTypeIdentifiers
 			func onFinished(_ path: String?) {
 				if let p = path {
 					Log.info("DownloadFileToSent: completed path=\(p)")
-					self.continuation.resume(returning: URL(filePath: p, directoryHint: .notDirectory))
+					self.continuation.resume(returning: URL(fileURLWithPath: p))
 				}
 				else {
 					Log.warn("DownloadFileToSent: no path")

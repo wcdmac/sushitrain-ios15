@@ -210,7 +210,7 @@ struct PhotoBackupSettingsView: View {
 			}
 
 			Section {
-				LabeledContent {
+				CompatLabeledContent {
 					TextField("", text: photoBackup.$subDirectoryPath, prompt: Text("(Top level)"))
 						.multilineTextAlignment(.trailing)
 						#if os(iOS)
@@ -229,7 +229,7 @@ struct PhotoBackupSettingsView: View {
 
 				Text("Example file location in folder: ")
 					+ Text("\(photoBackup.subDirectoryPath)/\(photoBackup.folderStructure.examplePath)")
-					.monospaced()
+					.compatMonospaced()
 
 			} footer: {
 				Text(

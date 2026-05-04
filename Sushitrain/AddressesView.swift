@@ -56,7 +56,7 @@ private struct AddressView: View {
 		nonmutating set {
 			switch self.addressType {
 			case .stun:
-				if let h = newValue?.host() {
+				if let h = newValue?.host {
 					if let p = newValue?.port {
 						self.address = "\(h):\(p)"
 					}
@@ -130,13 +130,15 @@ private struct AddressView: View {
 
 			Section {
 				// Host
-				LabeledContent {
+				HStack {
+					Text("IP address or host name")
+					Spacer()
 					TextField(
 						"",
 						text: Binding(
 							get: {
 								let url = self.url
-								return url?.host() ?? ""
+								return url?.host ?? ""
 							},
 							set: { nv in
 								var url =
@@ -148,11 +150,11 @@ private struct AddressView: View {
 						#if os(iOS)
 							.keyboardType(.asciiCapable).autocorrectionDisabled().autocapitalization(.none)
 						#endif
-				} label: {
-					Text("IP address or host name")
 				}
 
-				LabeledContent {
+				HStack {
+					Text("Port")
+					Spacer()
 					TextField(
 						"",
 						text: Binding(
@@ -172,15 +174,15 @@ private struct AddressView: View {
 						#if os(iOS)
 							.keyboardType(.numberPad).autocorrectionDisabled().autocapitalization(.none)
 						#endif
-				} label: {
-					Text("Port")
 				}
 
 				let urlComponents =
 					URLComponents(url: self.url ?? URL(string: "tcp://")!, resolvingAgainstBaseURL: false) ?? URLComponents()
 
 				if urlComponents.scheme == "relay" {
-					LabeledContent {
+					HStack {
+						Text("Relay ID")
+						Spacer()
 						TextField(
 							"",
 							text: Binding(
@@ -200,15 +202,15 @@ private struct AddressView: View {
 									url.queryItems = qi
 									self.address = url.string ?? ""
 								}), prompt: Text("")
-						).multilineTextAlignment(.trailing).monospaced()
+						).multilineTextAlignment(.trailing).font(.system(.body, design: .monospaced))
 							#if os(iOS)
 								.keyboardType(.asciiCapable).autocorrectionDisabled().autocapitalization(.none)
 							#endif
-					} label: {
-						Text("Relay ID")
 					}
 
-					LabeledContent {
+					HStack {
+						Text("Access token")
+						Spacer()
 						TextField(
 							"",
 							text: Binding(
@@ -226,26 +228,24 @@ private struct AddressView: View {
 									url.queryItems = qi
 									self.address = url.string ?? ""
 								}), prompt: Text("")
-						).multilineTextAlignment(.trailing).monospaced()
+						).multilineTextAlignment(.trailing).font(.system(.body, design: .monospaced))
 							#if os(iOS)
 								.keyboardType(.asciiCapable).autocorrectionDisabled().autocapitalization(.none)
 							#endif
-					} label: {
-						Text("Access token")
 					}
 				}
 			}
 
 			if self.addressType != .stun {
 				Section("URL") {
-					TextField("", text: $address).frame(maxWidth: .infinity).monospaced().multilineTextAlignment(.leading)
+					TextField("", text: $address).frame(maxWidth: .infinity).font(.system(.body, design: .monospaced)).multilineTextAlignment(.leading)
 						#if os(iOS)
 							.autocorrectionDisabled().autocapitalization(.none)
 						#endif
 				}
 			}
 		}
-		.onChange(of: self.address) { _, nv in
+		.onChange(of: self.address) { nv in
 			self.onChange(nv)
 		}
 		.navigationTitle(self.address)

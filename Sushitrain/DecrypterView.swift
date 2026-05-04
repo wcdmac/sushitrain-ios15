@@ -39,7 +39,7 @@ import SwiftUI
 					// Left pane: Encryption settings
 					Form {
 						Section("Encrypted folder") {
-							LabeledContent("Folder") {
+							CompatLabeledContent("Folder") {
 								HStack {
 									Text(sourceURL?.lastPathComponent ?? "")
 									Button("Select...") {
@@ -49,11 +49,11 @@ import SwiftUI
 								}
 							}
 
-							LabeledContent("Folder ID") {
+							CompatLabeledContent("Folder ID") {
 								TextField("", text: $folderID).textFieldStyle(.roundedBorder)
 							}
 
-							LabeledContent("Encryption password") {
+							CompatLabeledContent("Encryption password") {
 								TextField("", text: $folderPassword).textFieldStyle(.roundedBorder).textContentType(.password)
 							}
 
@@ -64,7 +64,7 @@ import SwiftUI
 						}
 
 						Section("\(selectedURLs.count) files selected") {
-							LabeledContent("Folder") {
+							CompatLabeledContent("Folder") {
 								HStack {
 									Text(destURL?.lastPathComponent ?? "")
 									Button("Select...") {

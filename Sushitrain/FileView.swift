@@ -750,8 +750,7 @@ private struct DownloadProgressView: View {
 				ProgressView(value: progress.percentage, total: 1.0) {
 					VStack {
 						HStack {
-							Label("Downloading file...", systemImage: "arrow.clockwise").foregroundStyle(.green).symbolEffect(
-								.pulse, value: date)
+							Label("Downloading file...", systemImage: "arrow.clockwise").foregroundStyle(.green)
 							Spacer()
 						}
 
@@ -811,7 +810,11 @@ struct FileSharingLinksView: View {
 		if entry.hasExternalSharingURL {
 			Group {
 				if let link = linkToUse {
-					ShareLink(item: link) { Label("Share external link", systemImage: "link.circle") }
+					if #available(iOS 16, *) {
+
+						ShareLink(item: link) { Label("Share external link", systemImage: "link.circle") }
+
+					}
 						#if os(macOS)
 							.buttonStyle(.link)
 						#endif
@@ -900,7 +903,7 @@ private struct StreamingURLView: View {
 						)
 					#endif
 
-					Text(self.url).monospaced().textSelection(.enabled)
+					Text(self.url).compatMonospaced().textSelection(.enabled)
 
 					Button("Copy to clipboard", systemImage: copied ? "checkmark.circle.dotted" : "doc.on.doc") {
 						writeTextToPasteboard(self.url)

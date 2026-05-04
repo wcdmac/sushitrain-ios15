@@ -76,3 +76,68 @@ extension View {
         }
     }
 }
+
+struct CompatLabeledContent<Label: View, Content: View>: View {
+    let label: Label
+    let content: Content
+    
+    init(@ViewBuilder content: () -> Content, @ViewBuilder label: () -> Label) {
+        self.content = content()
+        self.label = label()
+    }
+    
+    init(_ title: String, @ViewBuilder content: () -> Content) where Label == Text {
+        self.label = Text(title)
+        self.content = content()
+    }
+    
+    var body: some View {
+        if #available(iOS 16, macOS 13, *) {
+            LabeledContent {
+                content
+            } label: {
+                label
+            }
+        } else {
+            HStack {
+                label
+                Spacer()
+                content
+            }
+        }
+    }
+}
+
+func compatTaskSleep(seconds: Double) async throws {
+    if #available(iOS 16, macOS 13, *) {
+        try await Task.sleep(for: .seconds(seconds))
+    } else {
+        try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+    }
+}
+
+func compatTaskSleep(milliseconds: Double) async throws {
+    if #available(iOS 16, macOS 13, *) {
+        try await Task.sleep(for: .milliseconds(milliseconds))
+    } else {
+        try await Task.sleep(nanoseconds: UInt64(milliseconds * 1_000_000))
+    }
+}
+
+extension View {
+    func compatMonospaced() -> some View {
+        if #available(iOS 16, macOS 13, *) {
+            return AnyView(self.monospaced())
+        } else {
+            return AnyView(self.font(.system(.body, design: .monospaced)))
+        }
+    }
+    
+    func compatBold() -> some View {
+        if #available(iOS 16, macOS 13, *) {
+            return AnyView(self.bold())
+        } else {
+            return AnyView(self.fontWeight(.bold))
+        }
+    }
+}

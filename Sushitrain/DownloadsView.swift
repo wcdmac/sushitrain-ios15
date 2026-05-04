@@ -27,7 +27,7 @@ struct DownloadsView: View {
 							let progress = paths[path]!
 							ProgressView(value: progress.percentage, total: 1.0) {
 								Label("\(path)", systemImage: "arrow.down").foregroundStyle(.green)
-									.symbolEffect(.pulse, value: progress.percentage).frame(maxWidth: .infinity, alignment: .leading)
+									.frame(maxWidth: .infinity, alignment: .leading)
 									.multilineTextAlignment(.leading)
 							}.tint(.green)
 						}

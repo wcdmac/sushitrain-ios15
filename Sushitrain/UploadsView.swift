@@ -48,7 +48,7 @@ struct UploadsView: View {
 											{
 												ProgressView(value: progress.percentage, total: 1.0) {
 													Label("\(folder.displayName): \(filePath)", systemImage: "arrow.up").foregroundStyle(.green)
-														.symbolEffect(.pulse, value: progress.percentage).frame(maxWidth: .infinity, alignment: .leading)
+														.frame(maxWidth: .infinity, alignment: .leading)
 														.multilineTextAlignment(.leading)
 												}.tint(.green)
 											}
@@ -68,7 +68,7 @@ struct UploadsView: View {
 		.task {
 			await self.update()
 		}
-		.onChange(of: appState.eventCounter) {
+		.onChange(of: appState.eventCounter) { _ in
 			Task {
 				await self.update()
 			}

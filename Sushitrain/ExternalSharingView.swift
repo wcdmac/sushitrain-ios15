@@ -104,7 +104,7 @@ private struct UnencryptedSharingSettingsView: View {
 
 	var body: some View {
 		Section {
-			LabeledContent {
+			CompatLabeledContent {
 				TextField(
 					"",
 					text: Binding(
@@ -123,7 +123,7 @@ private struct UnencryptedSharingSettingsView: View {
 				Text("Public URL")
 			}
 
-			LabeledContent {
+			CompatLabeledContent {
 				TextField(
 					"",
 					text: Binding(
@@ -179,7 +179,7 @@ private struct EncryptedSharingSettingsView: View {
 			}
 
 			// Public URL base
-			LabeledContent {
+			CompatLabeledContent {
 				TextField("", text: Binding(get: { settings.url }, set: { settings.url = $0 }))
 					.multilineTextAlignment(.trailing)
 					.autocorrectionDisabled()
@@ -193,7 +193,7 @@ private struct EncryptedSharingSettingsView: View {
 
 			// Blob URL
 			if settings.format == .linkthing {
-				LabeledContent {
+				CompatLabeledContent {
 					TextField(
 						"",
 						text: Binding(get: { settings.blobURL }, set: { settings.blobURL = $0 })
@@ -210,7 +210,7 @@ private struct EncryptedSharingSettingsView: View {
 			}
 
 			// Folder password
-			LabeledContent {
+			CompatLabeledContent {
 				HStack {
 					TextField(
 						"",

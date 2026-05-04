@@ -105,7 +105,7 @@ struct DeviceIDView: View {
 		.onTapGesture {
 			self.qrCodeShown = true
 		}
-		.monospaced()
+		.compatMonospaced()
 		.contextMenu {
 			Button(action: {
 				writeTextToPasteboard(device.deviceID())
@@ -224,8 +224,8 @@ private struct QRView: View {
 				}
 
 				Text(self.text)
-					.monospaced()
-					.bold()
+					.compatMonospaced()
+					.compatBold()
 					.textSelection(.enabled)
 					.fixedSize(horizontal: false, vertical: true)
 					.multilineTextAlignment(.center)

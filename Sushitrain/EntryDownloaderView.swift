@@ -157,19 +157,16 @@ struct EntryDownloaderView: View {
 			}
 
 		case .share:
-			ShareLink(item: url)
+			if #available(iOS 16, *) {
+
+				ShareLink(item: url)
+
+			}
 			if #available(iOS 17, *) {
 				Button("Save a copy...", systemImage: "square.and.arrow.down") {
 					showFileExporter = true
 				}
-				.fileMover(isPresented: $showFileExporter, file: url) { result in
-					switch result {
-					case .success(_):
-						dismiss()
-					case .failure(let e):
-						Log.warn("could not move downloaded file: \(e)")
-						break
-					}
+				// fileMover requires iOS 17+
 				}
 			}
 		}

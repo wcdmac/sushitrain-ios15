@@ -50,13 +50,11 @@ struct ExternalSharingEncrypted: Equatable, Hashable, Codable {
 		if let root = URL(string: url) {
 			switch self.format {
 			case .basic:
-				let withPath = root.appending(
-					path: entry.encryptedFilePath(password), directoryHint: .notDirectory)
+				let withPath = root.compatAppending(path: entry.encryptedFilePath(password))
 				return URL(string: "#\(entry.fileKeyBase32(password))", relativeTo: withPath)
 			case .linkthing:
 				if let blobURLRoot = URL(string: self.blobURL) {
-					let blobURLPath = blobURLRoot.appending(
-						path: entry.encryptedFilePath(password), directoryHint: .notDirectory)
+					let blobURLPath = blobURLRoot.compatAppending(path: entry.encryptedFilePath(password))
 					let queryItems = [
 						URLQueryItem(name: "url", value: blobURLPath.absoluteString),
 						URLQueryItem(name: "key", value: entry.fileKeyBase32(password)),
@@ -79,8 +77,7 @@ struct ExternalSharingEncrypted: Equatable, Hashable, Codable {
 		if let root = URL(string: url) {
 			switch self.format {
 			case .basic:
-				let withPath = root.appending(
-					path: "E.syncthing-enc/NC/RYPTED", directoryHint: .notDirectory)
+				let withPath = root.compatAppending(path: "E.syncthing-enc/NC/RYPTED")
 				return URL(string: "#FILEKEY", relativeTo: withPath)
 			case .linkthing:
 				let queryItems = [
@@ -112,8 +109,7 @@ struct ExternalSharingUnencrypted: Equatable, Hashable, Codable {
 		if let root = URL(string: url) {
 			if path.hasPrefix(self.prefix) {
 				let strippedPath = path.dropFirst(self.prefix.count)
-				return root.appending(
-					path: strippedPath, directoryHint: isDirectory ? .isDirectory : .notDirectory)
+				return root.compatAppending(path: strippedPath)
 			}
 		}
 		return nil

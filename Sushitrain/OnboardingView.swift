@@ -182,7 +182,7 @@ private struct NextButton: View {
 			.padding()
 			.overlay(alignment: .center) {
 				Text(self.label)
-					.bold()
+					.compatBold()
 					.foregroundColor(.white)
 			}
 	}

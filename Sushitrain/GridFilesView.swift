@@ -131,8 +131,8 @@ struct GridFilesView: View {
 							}))
 					}
 					.aspectRatio(1, contentMode: .fit)
-					.clipShape(.rect)
-					.contentShape(.rect())
+					.clipShape(RoundedRectangle(cornerRadius: 0))
+					.contentShape(Rectangle())
 				}
 
 				// List files
@@ -146,8 +146,8 @@ struct GridFilesView: View {
 						}
 						.buttonStyle(PlainButtonStyle())
 					}
-					.clipShape(.rect)
-					.contentShape(.rect())
+					.clipShape(RoundedRectangle(cornerRadius: 0))
+					.contentShape(Rectangle())
 					.aspectRatio(1, contentMode: .fit)
 				}
 			} footer: {

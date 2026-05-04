@@ -27,7 +27,7 @@ struct IgnoresView: View {
 				Text(
 					"This is an advanced feature and should only be used if you know what you are doing."
 				)
-				.bold().foregroundStyle(.red).listRowBackground(Color.clear)
+				.compatBold().foregroundStyle(.red).listRowBackground(Color.clear)
 			}
 
 			Section {
@@ -218,7 +218,7 @@ struct SelectiveIgnoresView: View {
 				Text(
 					"This is an advanced feature and should only be used if you know what you are doing."
 				)
-				.bold().foregroundStyle(.red).listRowBackground(Color.clear)
+				.compatBold().foregroundStyle(.red).listRowBackground(Color.clear)
 			}
 
 			Section {

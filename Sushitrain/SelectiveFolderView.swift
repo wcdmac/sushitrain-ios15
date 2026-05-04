@@ -190,10 +190,10 @@ struct SelectiveFolderView: View {
 				await self.update()
 			}
 		}
-		.onChange(of: self.searchString) {
+		.onChange(of: self.searchString) { _ in
 			self.updateFilter()
 		}
-		.onChange(of: appState.eventCounter) {
+		.onChange(of: appState.eventCounter) { _ in
 			// Doesn't really need to do anything, just re-render the view (it relies on folder.isIdleOrSyncing which
 			// cannot be observed directly for changes)
 		}
@@ -500,7 +500,7 @@ private struct SelectedFileView: View {
 
 						if fa.isEmpty {
 							Text("Only copy")
-								.foregroundStyle(.orange).bold()
+								.foregroundStyle(.orange).compatBold()
 								.padding(.all, 3).overlay(
 									RoundedRectangle(
 										cornerRadius: 3

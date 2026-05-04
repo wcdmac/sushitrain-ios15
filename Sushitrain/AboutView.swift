@@ -86,7 +86,7 @@ struct AboutView: View {
 			.navigationBarTitleDisplayMode(.inline)
 		#endif
 		#if os(macOS)
-			
+			.formStyle(.grouped)
 		#endif
 		.sheet(isPresented: $showOnboarding) {
 			if #available(iOS 18, macOS 15, *) {
@@ -105,9 +105,9 @@ struct AboutView: View {
 				WebView(url: url, trustFingerprints: [], isLoading: Binding.constant(false), error: Binding.constant(nil))
 					.frame(minHeight: 480)
 					.toolbar {
-						SheetButton(role: .done) {
+						ToolbarItem(placement: .confirmationAction) { Button("Done") { 
 							showNotices = false
-						}
+						 } }
 					}
 					.navigationTitle("Legal notices")
 					#if os(iOS)

@@ -249,10 +249,7 @@ private struct AddressView: View {
 			self.onChange(nv)
 		}
 		.navigationTitle(self.address)
-		#if os(macOS)
-			
-		#endif
-	}
+			}
 }
 
 struct AddressesView: View {
@@ -446,10 +443,7 @@ struct AddressesView: View {
 		#if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
 		#endif
-		#if os(macOS)
-			
-		#endif
-		.toolbar {
+				.toolbar {
 			#if os(iOS)
 				ToolbarItem(placement: .topBarLeading) {
 					if !addresses.isEmpty {

@@ -271,32 +271,32 @@ enum PhotoBackupProgress {
 
 			// Check to see if anything changed at all
 			var onlyTheseLocalIdentifiers: Set<String>? = nil
-			let changeToken: PHPhotoLibraryChangeToken = PHPhotoLibrary.shared().currentChangeToken
-			Log.info("Current change token: \(changeToken)")
-			if let lastSuccessfulChangeToken = await self.lastSuccessfulChangeToken {
-				Log.info("Last change token: \(lastSuccessfulChangeToken)")
-				if !fullExport {
-					do {
-						let ids = try self.insertedOrUpdatedLocalIdentifiers(since: lastSuccessfulChangeToken, to: changeToken)
-						if ids.isEmpty {
-							// FIXME: we are skipping purge here
-							Log.info("Nothing changed and not a full export, finishing early!")
-							DispatchQueue.main.async {
-								self.progress = .finished(savedAssets: nil, purgedAssets: nil)
-								self.lastCompletedDate = Date.now.timeIntervalSinceReferenceDate
+			if #available(iOS 16, *) {
+				let changeToken: PHPersistentChangeToken = PHPhotoLibrary.shared().currentChangeToken
+				Log.info("Current change token: \(changeToken)")
+				if let lastSuccessfulChangeToken = await self.lastSuccessfulChangeToken {
+					Log.info("Last change token: \(lastSuccessfulChangeToken)")
+					if !fullExport {
+						do {
+							let ids = try self.insertedOrUpdatedLocalIdentifiers(since: lastSuccessfulChangeToken, to: changeToken)
+							if ids.isEmpty {
+								Log.info("Nothing changed and not a full export, finishing early!")
+								DispatchQueue.main.async {
+									self.progress = .finished(savedAssets: nil, purgedAssets: nil)
+								}
+								return
 							}
-							return
+							else {
+								onlyTheseLocalIdentifiers = ids
+							}
 						}
-						onlyTheseLocalIdentifiers = ids
-					}
-					catch PHPhotosError.persistentChangeTokenExpired,
-						PHPhotosError.persistentChangeDetailsUnavailable
-					{
-						Log.warn("Persistent change token expired or details unavailable; resetting the saved change token")
-						DispatchQueue.main.async {
-							self.lastSuccessfulChangeToken = nil
+						catch {
+							Log.warn("Failed to determine changed local identifiers: \(error)")
 						}
 					}
+				}
+				DispatchQueue.main.async {
+					self.lastSuccessfulChangeToken = changeToken
 				}
 			}
 
@@ -348,10 +348,7 @@ enum PhotoBackupProgress {
 				onlyTheseLocalIdentifiers: onlyTheseLocalIdentifiers
 			)
 
-			// Save change token
-			DispatchQueue.main.async {
-				self.lastSuccessfulChangeToken = changeToken
-			}
+
 		}
 		return self.photoBackupTask
 	}

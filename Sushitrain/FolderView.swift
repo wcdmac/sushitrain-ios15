@@ -53,9 +53,6 @@ struct ShareFolderWithDeviceDetailsView: View {
 			.task {
 				await self.update()
 			}
-			#if os(macOS)
-				
-			#endif
 			.onAppear {
 				self.newPassword = folder.encryptionPassword(for: deviceID)
 				passwordFieldFocus = true
@@ -81,9 +78,9 @@ struct ShareFolderWithDeviceDetailsView: View {
 						}
 					})
 
-				SheetButton(role: .cancel) {
+				ToolbarItem(placement: .cancellationAction) { Button("Cancel") { 
 					dismiss()
-				}
+				 } }
 			}
 		}
 		.alert(isPresented: Binding.isNotNil($error)) {
@@ -726,10 +723,7 @@ struct FolderView: View {
 				}
 			}
 		}
-		#if os(macOS)
-			
-		#endif
-		#if os(iOS)
+				#if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
 		#endif
 		.navigationTitle(folder.displayName)
@@ -1027,10 +1021,7 @@ private struct FolderThumbnailSettingsView: View {
 				}
 			}
 		}
-		#if os(macOS)
-			
-		#endif
-		.navigationTitle("Thumbnails")
+				.navigationTitle("Thumbnails")
 		#if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
 		#endif
@@ -1055,9 +1046,9 @@ private struct FolderThumbnailSettingsView: View {
 						.navigationBarTitleDisplayMode(.inline)
 					#endif
 					.toolbar {
-						SheetButton(role: .cancel) {
+						ToolbarItem(placement: .cancellationAction) { Button("Cancel") { 
 							showGenerateThumbnails = false
-						}
+						 } }
 					}
 			}
 		}
@@ -1379,10 +1370,7 @@ private struct AdvancedFolderSettingsView: View {
 		#if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
 		#endif
-		#if os(macOS)
-			
-		#endif
-	}
+			}
 
 	@ViewBuilder private func selectiveIgnoresView() -> some View {
 		SelectiveIgnoresView(folder: self.folder).navigationTitle("Files to ignore")

@@ -135,9 +135,9 @@ struct DeviceIDView: View {
 				CompatNavigationStack {
 					QRView(text: self.device.deviceID())
 						.toolbar {
-							SheetButton(role: .done) {
+							ToolbarItem(placement: .confirmationAction) { Button("Done") { 
 								self.qrCodeShown = false
-							}
+							 } }
 						}
 				}
 			}
@@ -147,9 +147,9 @@ struct DeviceIDView: View {
 				ResolvedAddressesView()
 					.navigationTitle("Addresses")
 					.toolbar {
-						SheetButton(role: .done) {
+						ToolbarItem(placement: .confirmationAction) { Button("Done") { 
 							self.localAddressesShown = false
-						}
+						 } }
 					}
 			}
 		}

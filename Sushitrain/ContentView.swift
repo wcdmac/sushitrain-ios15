@@ -49,7 +49,7 @@ struct NavigateToAction {
 }
 
 private struct NavigateToKey: EnvironmentKey {
-	static let defaultValue = NavigateToAction(action: { _ in })
+	nonisolated(unsafe) static let defaultValue = NavigateToAction(action: { _ in })
 }
 
 extension EnvironmentValues {

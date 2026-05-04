@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2024 Tommy van der Vorst
+// Copyright (C) 2024 Tommy van der Vorst
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -47,17 +47,15 @@ struct AddDeviceView: View {
 					#endif
 				}
 			}
-			#if os(macOS)
-				
-			#endif
+			#if os(iOS)
 			.onAppear {
 				idFieldFocus = true
 				deviceID = suggestedDeviceID
 			}
-			#if os(iOS)
-				.sheet(
-					isPresented: $showQRScanner,
-					content: {
+			.sheet(
+				isPresented: $showQRScanner,
+				content: {
+					if #available(iOS 16, *) {
 						if DataScannerViewController.isSupported
 							&& DataScannerViewController.isAvailable
 						{
@@ -76,12 +74,19 @@ struct AddDeviceView: View {
 								}
 							}
 						}
-					})
-			#endif
+					}
+				})
+		#else
+			.onAppear {
+				idFieldFocus = true
+				deviceID = suggestedDeviceID
+			}
+		#endif
 			.toolbar {
-				SheetButton(role: .add, isDisabled: deviceID.isEmpty || !SushitrainIsValidDeviceID(deviceID)) {
+				Button("Add", systemImage: "plus") {
 					self.add()
 				}
+				.disabled(deviceID.isEmpty || !SushitrainIsValidDeviceID(deviceID))
 
 				Button("Cancel") {
 					dismiss()

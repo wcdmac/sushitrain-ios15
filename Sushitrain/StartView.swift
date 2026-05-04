@@ -444,10 +444,7 @@ struct StartView: View {
 				#endif
 			}
 		}
-		#if os(macOS)
-			
-		#endif
-		.navigationTitle("Start")
+				.navigationTitle("Start")
 		#if os(iOS)
 			.toolbar {
 				ToolbarItem {
@@ -469,9 +466,9 @@ struct StartView: View {
 						.navigationTitle(fe.displayName)
 						.frame(minHeight: 300)
 						.toolbar {
-							SheetButton(role: .done) {
+							ToolbarItem(placement: .confirmationAction) { Button("Done") { 
 								self.fixingInaccessibleExternalFolder = nil
-							}
+							 } }
 						}
 				}
 			}

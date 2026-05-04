@@ -149,7 +149,7 @@ struct ChangesView: View {
 			VStack(alignment: .leading) {
 				Text("\(folder.displayName): \(change.path)")
 					.multilineTextAlignment(.leading)
-					
+					.compatBold()
 
 				if let dateString = change.time?.date()?.formatted() {
 					Text(dateString).dynamicTypeSize(.small)

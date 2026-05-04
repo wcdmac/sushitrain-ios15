@@ -208,10 +208,7 @@ struct DeviceView: View {
 				CompatContentUnavailableView("Unknown device", systemImage: "externaldrive.badge.questionmark")
 			}
 		}
-		#if os(macOS)
-			
-		#endif
-		.navigationTitle(!device.exists() || device.name().isEmpty ? device.deviceID() : device.name())
+				.navigationTitle(!device.exists() || device.name().isEmpty ? device.deviceID() : device.name())
 		.task {
 			await self.update()
 		}

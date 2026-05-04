@@ -261,10 +261,7 @@ struct FolderStatisticsView: View {
 		.task {
 			await self.update()
 		}
-		#if os(macOS)
-			
-		#endif
-		#if os(iOS)
+				#if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
 		#endif
 		.navigationTitle("Folder statistics: '\(self.folder.displayName)'")

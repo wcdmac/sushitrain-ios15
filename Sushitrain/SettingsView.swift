@@ -108,7 +108,7 @@ import SushitrainCore
 					)
 				}
 			}
-			
+			.formStyle(.grouped)
 			.navigationTitle("Configuration settings")
 			.fileImporter(isPresented: $showHomeDirectorySelector, allowedContentTypes: [.directory]) {
 				result in
@@ -206,9 +206,9 @@ struct AdvancedSettingsView: View {
 						AsyncAddressesView(addressType: .listening)
 							.navigationTitle("Listening addresses")
 							.toolbar {
-								SheetButton(role: .save) {
+								ToolbarItem(placement: .confirmationAction) { Button("Save") { 
 									showListeningAddresses = false
-								}
+								 } }
 							}
 					}
 				}
@@ -286,9 +286,9 @@ struct AdvancedSettingsView: View {
 						AsyncAddressesView(addressType: .discovery)
 							.navigationTitle("Global announce servers")
 							.toolbar {
-								SheetButton(role: .save) {
+								ToolbarItem(placement: .confirmationAction) { Button("Save") { 
 									showDiscoveryAddresses = false
-								}
+								 } }
 							}
 					}
 				}
@@ -341,9 +341,9 @@ struct AdvancedSettingsView: View {
 						AsyncAddressesView(addressType: .stun)
 							.navigationTitle("STUN servers")
 							.toolbar {
-								SheetButton(role: .save) {
+								ToolbarItem(placement: .confirmationAction) { Button("Save") { 
 									showSTUNAddresses = false
-								}
+								 } }
 							}
 					}
 				}
@@ -423,9 +423,9 @@ struct AdvancedSettingsView: View {
 						CompatNavigationStack {
 							TroubleshootingView(userSettings: userSettings)
 								.toolbar {
-									SheetButton(role: .done) {
+									ToolbarItem(placement: .confirmationAction) { Button("Done") { 
 										showTroubleshooting = false
-									}
+									 } }
 								}
 						}
 					}
@@ -438,9 +438,9 @@ struct AdvancedSettingsView: View {
 					.sheet(isPresented: $showConfigurationSettings) {
 						ConfigurationSettingsView()
 							.toolbar {
-								SheetButton(role: .done) {
+								ToolbarItem(placement: .confirmationAction) { Button("Done") { 
 									showConfigurationSettings = false
-								}
+								 } }
 							}
 					}
 			#else
@@ -461,7 +461,7 @@ struct AdvancedSettingsView: View {
 		}
 		.navigationTitle("Advanced settings")
 		#if os(macOS)
-			
+			.formStyle(.grouped)
 		#endif
 		#if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
@@ -852,7 +852,7 @@ private struct BandwidthSettingsView: View {
 		}
 		.navigationTitle("Bandwidth limitations")
 		#if os(macOS)
-			
+			.formStyle(.grouped)
 		#endif
 		#if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
@@ -908,7 +908,7 @@ private struct BandwidthSettingsView: View {
 			}
 			.frame(minWidth: 500, minHeight: 450)
 			.windowResizeBehavior(.automatic)
-			
+			.formStyle(.grouped)
 		}
 	}
 
@@ -1038,7 +1038,7 @@ private struct BandwidthSettingsView: View {
 			}
 			.navigationTitle("Settings")
 			#if os(macOS)
-				
+				.formStyle(.grouped)
 			#endif
 		}
 	}

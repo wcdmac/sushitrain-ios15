@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2024-2025 Tommy van der Vorst
+﻿﻿// Copyright (C) 2024-2025 Tommy van der Vorst
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -105,7 +105,7 @@ private struct LogView: View {
 				.textSelection(.enabled)
 				.multilineTextAlignment(.leading)
 				.lineLimit(nil)
-				
+				.compatMonospaced()
 				.padding()
 				.fixedSize(horizontal: false, vertical: true)
 		}
@@ -284,7 +284,7 @@ struct SupportView: View {
 			}
 		}
 		#if os(macOS)
-			
+			.formStyle(.grouped)
 		#endif
 		.navigationTitle("Questions, support & feedback")
 		#if os(iOS)
@@ -312,7 +312,7 @@ struct MaintenanceView: View {
 			HStack {
 				Spacer()
 				CompatContentUnavailableCustomView {
-					ProgressView().controlSize(.large)
+					ProgressView().controlSize(.extraLarge)
 				} description: {
 					Text("Performing database maintenance...")
 				}
@@ -592,7 +592,7 @@ struct TroubleshootingView: View {
 			}
 		}
 		#if os(macOS)
-			
+			.formStyle(.grouped)
 			.navigationBarBackButtonHidden(true)
 			.toolbar {
 				ToolbarItem(placement: .navigation) {

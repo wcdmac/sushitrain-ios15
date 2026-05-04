@@ -16,7 +16,7 @@ struct CompatContentUnavailableView: View {
 			if let systemImage = systemImage, let description = description {
 				ContentUnavailableView(title, systemImage: systemImage, description: description)
 			} else if let systemImage = systemImage {
-				ContentUnavailableView(title, systemImage: systemImage, description: Text(""))
+				ContentUnavailableView(title, systemImage: systemImage)
 			} else if let description = description {
 				ContentUnavailableView(title, description: description)
 			} else {

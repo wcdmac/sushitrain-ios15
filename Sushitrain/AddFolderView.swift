@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2024 Tommy van der Vorst
+// Copyright (C) 2024 Tommy van der Vorst
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -198,9 +198,7 @@ struct AddFolderView: View {
 					self.shareWithSection()
 				}
 			}
-			#if os(macOS)
-				
-			#endif
+			
 			.onAppear {
 				idFieldFocus = true
 			}
@@ -218,17 +216,22 @@ struct AddFolderView: View {
 				}
 			}
 			.toolbar {
-				SheetButton(role: .add, isDisabled: folderID.isEmpty || folderExists) {
-					if self.folderPath != nil {
-						self.showAlert = .addingExternalFolderWarning
+				ToolbarItem(placement: .confirmationAction) {
+					Button("Add") {
+						if self.folderPath != nil {
+							self.showAlert = .addingExternalFolderWarning
+						}
+						else {
+							self.add()
+						}
 					}
-					else {
-						self.add()
-					}
+					.disabled(folderID.isEmpty || folderExists)
 				}
 
-				SheetButton(role: .cancel) {
-					dismiss()
+				ToolbarItem(placement: .cancellationAction) {
+					Button("Cancel") {
+						dismiss()
+					}
 				}
 			}
 			.navigationTitle("Add folder")

@@ -42,14 +42,9 @@ extension String {
 }
 
 extension UIApplication {
-	@available(iOS 16, *)
-	private func _setBadgeCount(_ count: Int) {
-		self.setBadgeCount(count)
-	}
-
 	func compatSetBadgeCount(_ count: Int) {
 		if #available(iOS 16, *) {
-			self._setBadgeCount(count)
+			self.setBadgeCount(count)
 		} else {
 			UIApplication.shared.applicationIconBadgeNumber = count
 		}

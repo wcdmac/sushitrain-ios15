@@ -110,7 +110,7 @@ struct FileView: View {
 				}
 			}
 			#if os(macOS)
-				
+				.formStyle(.grouped)
 			#endif
 			.navigationTitle(file.fileName())
 			.quickLookPreview(self.$localItemURL)
@@ -154,19 +154,15 @@ struct FileView: View {
 			.sheet(isPresented: $showArchive) {
 				self.zipSheet()
 			}
-
 			.sheet(item: $showDownloader) { action in
 				self.downloaderSheet(action: action)
 			}
-
 			.sheet(isPresented: $showCopyStreamingURL) {
 				self.copyStreamingURLSheet()
 			}
-
 			.sheet(isPresented: $showEncryptionSheet) {
 				EncryptionView(entry: self.file)
 			}
-
 			.toolbar {
 				// Next/previous buttons
 				ToolbarItemGroup(placement: .navigation) {
@@ -210,20 +206,16 @@ struct FileView: View {
 					}
 				#endif
 			}
-
 			.onAppear {
 				selfIndex = self.siblings?.firstIndex(of: file)
 			}
-
 			.task {
-				await self.update()
+				@Sendable func _doTask() async { await self.update()
 			}
-
 			.onChange(of: file) { _ in
 				self.fullyAvailableOnDevices = nil
 				self.update()
 			}
-
 			.onChange(of: appState.eventCounter) { _ in
 				self.update()
 			}
@@ -460,9 +452,9 @@ struct FileView: View {
 				ZipView(archive: ar, prefix: "")
 					.navigationTitle(file.fileName())
 					.toolbar {
-						Button("Done") {
+						ToolbarItem(placement: .confirmationAction) { Button("Done") { 
 							showArchive = false
-						}
+						 } }
 					}
 			}
 			else {
@@ -478,9 +470,9 @@ struct FileView: View {
 					.navigationBarTitleDisplayMode(.inline)
 				#endif
 				.toolbar {
-					Button("Cancel") {
+					ToolbarItem(placement: .cancellationAction) { Button("Cancel") { 
 						showDownloader = nil
-					}
+					 } }
 				}
 		}
 	}
@@ -498,9 +490,9 @@ struct FileView: View {
 			self.streamingURLView()
 				.navigationTitle("Stream in another app")
 				.toolbar {
-					Button("Done") {
+					ToolbarItem(placement: .confirmationAction) { Button("Done") { 
 						showCopyStreamingURL = false
-					}
+					 } }
 				}
 		}
 	}
@@ -905,7 +897,7 @@ private struct StreamingURLView: View {
 						)
 					#endif
 
-					Text(self.url).textSelection(.enabled)
+					Text(self.url).compatMonospaced().textSelection(.enabled)
 
 					Button("Copy to clipboard", systemImage: copied ? "checkmark.circle.dotted" : "doc.on.doc") {
 						writeTextToPasteboard(self.url)
@@ -920,7 +912,7 @@ private struct StreamingURLView: View {
 			}
 		}
 		#if os(macOS)
-			
+			.formStyle(.grouped)
 		#endif
 		.task {
 			self.url = entry.onDemandURL()

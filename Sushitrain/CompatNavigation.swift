@@ -10,7 +10,7 @@ enum CompatNavigationSplitViewVisibility {
 		switch self {
 		case .automatic: return .automatic
 		case .doubleColumn: return .doubleColumn
-		case .detailOnly: return .detailOnly
+		default: return .detailOnly
 		}
 	}
 }

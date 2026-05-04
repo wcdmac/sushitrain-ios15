@@ -218,7 +218,7 @@ private struct PhotoFolderAlbumSettingsView: View {
 
 			Section {
 				CompatLabeledContent {
-					TextField("", text: $dirName).multilineTextAlignment(.trailing)
+					TextField("", text: $dirName).compatMonospaced().multilineTextAlignment(.trailing)
 				} label: {
 					Text("To subdirectory")
 				}
@@ -265,10 +265,7 @@ private struct PhotoFolderAlbumSettingsView: View {
 				)
 			}
 		}
-		#if os(macOS)
-			
-		#endif
-		.task {
+				.task {
 			authorizationStatus = PHPhotoLibrary.authorizationStatus()
 		}
 		.navigationTitle(dirName.isEmpty ? "Add album" : "Settings for '\(dirName)'")

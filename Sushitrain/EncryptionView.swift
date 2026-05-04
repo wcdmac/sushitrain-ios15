@@ -91,9 +91,9 @@ struct EncryptionView: View {
 			
 			.navigationTitle(entry.name())
 			.toolbar {
-				SheetButton(role: .done) {
+				ToolbarItem(placement: .confirmationAction) { Button("Done") { 
 					self.dismiss()
-				}
+				 } }
 			}
 		}
 	}

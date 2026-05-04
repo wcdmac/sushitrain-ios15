@@ -6,7 +6,6 @@
 import SwiftUI
 @preconcurrency import SushitrainCore
 import UniformTypeIdentifiers
-import AppIntents
 
 @available(iOS 16, macOS 13, *)
 private enum IntentHandlingError: LocalizedError {
@@ -29,7 +28,6 @@ private enum IntentHandlingError: LocalizedError {
 	}
 }
 
-@available(iOS 16, macOS 13, *)
 extension AppState {
 	fileprivate func waitForAppStarted() async throws {
 		// Wait for app startup
@@ -56,7 +54,8 @@ extension AppState {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct SynchronizePhotosIntent: AppIntent {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct SynchronizePhotosIntent: AppIntent {
 	static let title: LocalizedStringResource = "Back-up new photos"
 
 	@Dependency private var appState: AppState
@@ -71,7 +70,8 @@ extension AppState {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct GenerateThumbnailsIntent: AppIntent {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct GenerateThumbnailsIntent: AppIntent {
 	static let title: LocalizedStringResource = "Generate thumbnails"
 
 	enum GenerateThumbnailsError: LocalizedError {
@@ -133,7 +133,7 @@ extension AppState {
 				}
 
 				group.addTask {
-					try await compatTaskSleep(seconds: Double(self.time))
+					try await compatTaskSleep(seconds: self.time)
 				}
 
 				defer { group.cancelAll() }
@@ -149,7 +149,8 @@ extension AppState {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct SynchronizeIntent: AppIntent {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct SynchronizeIntent: AppIntent {
 	static let title: LocalizedStringResource = "Synchronize for a while"
 
 	@Dependency private var appState: AppState
@@ -166,7 +167,7 @@ extension AppState {
 			try await appState.waitForAppStarted()
 			await appState.awake()
 			do {
-				try await compatTaskSleep(seconds: Double(self.time))
+				try await compatTaskSleep(seconds: self.time)
 			}
 			catch {
 				await appState.sleep()
@@ -185,12 +186,13 @@ enum FileEntityQueryPredicate {
 	case pathPrefix(String)
 }
 
-@available(iOS 16, macOS 13, *) struct FileEntityQuery: EntityQuery, EntityPropertyQuery {
-	nonisolated(unsafe) 	static let sortingOptions = SortingOptions {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct FileEntityQuery: EntityQuery, EntityPropertyQuery {
+	static let sortingOptions = SortingOptions {
 		SortableBy(\FileEntity.$name)
 	}
 
-	nonisolated(unsafe) 	static let properties = QueryProperties {
+	static let properties = QueryProperties {
 		Property(\.$name) {
 			ContainsComparator { FileEntityQueryPredicate.fileNameContains($0) }
 		}
@@ -321,7 +323,8 @@ enum FileEntityQueryPredicate {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct FileEntity: AppEntity {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct FileEntity: AppEntity {
 	typealias DefaultQuery = FileEntityQuery
 	static let defaultQuery = FileEntityQuery()
 
@@ -379,7 +382,8 @@ enum FileEntityQueryPredicate {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct DeviceEntity: AppEntity {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct DeviceEntity: AppEntity {
 	static let defaultQuery = DeviceEntityQuery()
 	typealias DefaultQuery = DeviceEntityQuery
 
@@ -426,7 +430,8 @@ enum FileEntityQueryPredicate {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct FolderEntity: AppEntity, Equatable {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct FolderEntity: AppEntity, Equatable {
 	static let defaultQuery = FolderEntityQuery()
 
 	typealias DefaultQuery = FolderEntityQuery
@@ -466,7 +471,8 @@ enum FileEntityQueryPredicate {
 	var url: URL?
 }
 
-@available(iOS 16, macOS 13, *) struct FolderEntityQuery: EntityQuery, EntityStringQuery, EnumerableEntityQuery {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct FolderEntityQuery: EntityQuery, EntityStringQuery, EnumerableEntityQuery {
 	func allEntities() async throws -> [FolderEntity] {
 		return await appState.folders().map {
 			FolderEntity(folder: $0)
@@ -497,7 +503,8 @@ enum FileEntityQueryPredicate {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct DeviceEntityQuery: EntityQuery, EntityStringQuery, EnumerableEntityQuery {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct DeviceEntityQuery: EntityQuery, EntityStringQuery, EnumerableEntityQuery {
 	func allEntities() async throws -> [DeviceEntity] {
 		try await appState.waitForAppStarted()
 		return await appState.peers().filter { !$0.isSelf() }.map {
@@ -529,7 +536,8 @@ enum FileEntityQueryPredicate {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct GetExtraneousFilesIntent: AppIntent {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct GetExtraneousFilesIntent: AppIntent {
 	static let title: LocalizedStringResource = "Get new, unsynchronized files in folder"
 
 	@Dependency private var appState: AppState
@@ -560,7 +568,8 @@ enum FileEntityQueryPredicate {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct GetNeededFilesIntent: AppIntent {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct GetNeededFilesIntent: AppIntent {
 	static let title: LocalizedStringResource = "Get files in folder needed by this device"
 
 	@Dependency private var appState: AppState
@@ -581,7 +590,8 @@ enum FileEntityQueryPredicate {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct GetRemoteNeededFilesIntent: AppIntent {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct GetRemoteNeededFilesIntent: AppIntent {
 	static let title: LocalizedStringResource = "Get files in folder needed by another device"
 
 	@Dependency private var appState: AppState
@@ -605,7 +615,8 @@ enum FileEntityQueryPredicate {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct RescanIntent: AppIntent {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct RescanIntent: AppIntent {
 	static let title: LocalizedStringResource = "Rescan folder"
 
 	@Dependency private var appState: AppState
@@ -629,7 +640,8 @@ enum FileEntityQueryPredicate {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct RemoveEmptySubdirectoriesIntent: AppIntent {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct RemoveEmptySubdirectoriesIntent: AppIntent {
 	static let title: LocalizedStringResource = "Remove unsynchronized empty subdirectories"
 
 	@Dependency private var appState: AppState
@@ -649,7 +661,8 @@ enum FileEntityQueryPredicate {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct UnselectSynchronizedFilesIntent: AppIntent {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct UnselectSynchronizedFilesIntent: AppIntent {
 	static let title: LocalizedStringResource = "Deselect files that are on other devices"
 
 	enum Errors: LocalizedError {
@@ -753,7 +766,8 @@ extension ConfigureHidden: AppEnum {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct ConfigureFolderIntent: AppIntent {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct ConfigureFolderIntent: AppIntent {
 	static let title: LocalizedStringResource = "Configure folder(s)"
 
 	@Dependency private var appState: AppState
@@ -794,12 +808,12 @@ extension ConfigureHidden: AppEnum {
 	}
 }
 
-@available(iOS 16, macOS 13, *)
 enum IntentError: Error {
 	case folderNotFound
 }
 
-@available(iOS 16, macOS 13, *) struct GetFolderIntent: AppIntent {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct GetFolderIntent: AppIntent {
 	static let title: LocalizedStringResource = "Get folder directory"
 
 	@Dependency private var appState: AppState
@@ -818,7 +832,8 @@ enum IntentError: Error {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct SearchInAppIntent: AppIntent {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct SearchInAppIntent: AppIntent {
 	static let title: LocalizedStringResource = "Search files in app"
 	static let openAppWhenRun: Bool = true
 
@@ -838,7 +853,8 @@ enum IntentError: Error {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct OpenFolderInAppIntent: AppIntent {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct OpenFolderInAppIntent: AppIntent {
 	static let title: LocalizedStringResource = "Show folder in the app"
 	static let openAppWhenRun: Bool = true
 
@@ -861,7 +877,8 @@ enum IntentError: Error {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct OpenFileInAppIntent: AppIntent {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct OpenFileInAppIntent: AppIntent {
 	static let title: LocalizedStringResource = "Show file in the app"
 	static let openAppWhenRun: Bool = true
 
@@ -879,7 +896,8 @@ enum IntentError: Error {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct ConfigureDeviceIntent: AppIntent {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct ConfigureDeviceIntent: AppIntent {
 	static let title: LocalizedStringResource = "Configure device(s)"
 
 	@Dependency private var appState: AppState
@@ -909,7 +927,8 @@ enum IntentError: Error {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct GetDeviceIDIntent: AppIntent {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct GetDeviceIDIntent: AppIntent {
 	static let title: LocalizedStringResource = "Get device ID"
 
 	@Dependency private var appState: AppState
@@ -920,7 +939,8 @@ enum IntentError: Error {
 	}
 }
 
-@available(iOS 16, macOS 13, *) struct DownloadFilesIntent: AppIntent {
+@available(iOS 16, macOS 13, *)
+@available(iOS 16, *) struct DownloadFilesIntent: AppIntent {
 	static let title: LocalizedStringResource = "Download files"
 
 	@Parameter(title: "Files", description: "The files to download")

@@ -29,9 +29,9 @@ struct BrowserListView: View {
 					CompatNavigationStack {
 						FolderStatisticsView(folder: folder)
 							.toolbar {
-								SheetButton(role: .done) {
+								ToolbarItem(placement: .confirmationAction) { Button("Done") { 
 									showStatistics = false
-								}
+								 } }
 							}
 					}
 				}

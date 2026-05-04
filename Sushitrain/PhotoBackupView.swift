@@ -362,10 +362,7 @@ struct PhotoBackupSettingsView: View {
 			}
 		}
 		.navigationTitle("Photo back-up")
-		#if os(macOS)
-			
-		#endif
-		#if os(iOS)
+				#if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
 		#endif
 		.task {

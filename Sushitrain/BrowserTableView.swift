@@ -56,62 +56,7 @@ struct BrowserTableView: View {
 			of: SushitrainEntry.self,
 			selection: self.$selection,
 			sortOrder: $sortOrder,
-			columns: {
-				// Name and icon
-				TableColumn("Name", sortUsing: EntryComparator(order: .forward, sortBy: .name)) {
-					(entry: SushitrainEntry) in
-					EntryNameView(entry: entry, viewStyle: self.viewStyle)
-						.environment(self.appState)  // Needed because for some reason it does not propagate
-				}
-				.defaultVisibility(.visible)
-				
-
-				// File extension
-				TableColumn(
-					"File type", sortUsing: EntryComparator(order: .forward, sortBy: .fileExtension)
-				) {
-					(entry: SushitrainEntry) in
-					Text(entry.extension())
-						.foregroundStyle(Color.primary)
-						.opacity(entry.isLocallyPresent() ? 1.0 : EntryView.remoteFileOpacity)
-				}
-				.width(min: 32, max: 64)
-				.defaultVisibility(.hidden)
-				
-
-				// File size
-				TableColumn(
-					"Size",
-					sortUsing: EntryComparator(order: .forward, sortBy: .size)
-				) { entry in
-					if !entry.isDirectory() {
-						Text(Self.formatter.string(fromByteCount: entry.size()))
-							.foregroundStyle(Color.primary)
-							.opacity(entry.isLocallyPresent() ? 1.0 : EntryView.remoteFileOpacity)
-					}
-				}
-				.width(min: 100, max: 120)
-				.defaultVisibility(.hidden)
-				.alignment(.trailing)
-				
-
-				// Last modified date
-				TableColumn(
-					"Last modified",
-					sortUsing: EntryComparator(order: .forward, sortBy: .lastModifiedDate)
-				) { (entry: SushitrainEntry) in
-					if let md = entry.modifiedAt()?.date(), !entry.isSymlink() {
-						Text(md.formatted(date: .numeric, time: .shortened))
-							.foregroundStyle(Color.primary)
-							.opacity(entry.isLocallyPresent() ? 1.0 : EntryView.remoteFileOpacity)
-					}
-				}
-				.width(min: 150, max: 180)
-				.defaultVisibility(.hidden)
-				.alignment(.leading)
-				
-
-			},
+			columns: { self.tableColumns },
 			rows: {
 				ForEach(entries) { entry in
 					TableRow(entry).draggable(entry)
@@ -193,6 +138,54 @@ struct BrowserTableView: View {
 		.compatNavigationDestination(isPresented: Binding.isNotNil($openedEntry)) {
 			self.nextView()
 		}
+	}
+
+	@TableColumnBuilder<SushitrainEntry> private var tableColumns: some TableColumnContent<SushitrainEntry, EmptyView> {
+		TableColumn("Name", sortUsing: EntryComparator(order: .forward, sortBy: .name)) {
+			(entry: SushitrainEntry) in
+			EntryNameView(entry: entry, viewStyle: self.viewStyle)
+				.environment(self.appState)
+		}
+		.defaultVisibility(.visible)
+
+		TableColumn(
+			"File type", sortUsing: EntryComparator(order: .forward, sortBy: .fileExtension)
+		) {
+			(entry: SushitrainEntry) in
+			Text(entry.extension())
+				.foregroundStyle(Color.primary)
+				.opacity(entry.isLocallyPresent() ? 1.0 : EntryView.remoteFileOpacity)
+		}
+		.width(min: 32, max: 64)
+		.defaultVisibility(.hidden)
+
+		TableColumn(
+			"Size",
+			sortUsing: EntryComparator(order: .forward, sortBy: .size)
+		) { entry in
+			if !entry.isDirectory() {
+				Text(Self.formatter.string(fromByteCount: entry.size()))
+					.foregroundStyle(Color.primary)
+					.opacity(entry.isLocallyPresent() ? 1.0 : EntryView.remoteFileOpacity)
+			}
+		}
+		.width(min: 100, max: 120)
+		.defaultVisibility(.hidden)
+		.alignment(.trailing)
+
+		TableColumn(
+			"Last modified",
+			sortUsing: EntryComparator(order: .forward, sortBy: .lastModifiedDate)
+		) { (entry: SushitrainEntry) in
+			if let md = entry.modifiedAt()?.date(), !entry.isSymlink() {
+				Text(md.formatted(date: .numeric, time: .shortened))
+					.foregroundStyle(Color.primary)
+					.opacity(entry.isLocallyPresent() ? 1.0 : EntryView.remoteFileOpacity)
+			}
+		}
+		.width(min: 150, max: 180)
+		.defaultVisibility(.hidden)
+		.alignment(.leading)
 	}
 
 	@ViewBuilder private func nextView() -> some View {

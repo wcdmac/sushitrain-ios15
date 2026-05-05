@@ -434,262 +434,264 @@ private struct DevicesGridView: View {
 
 		@SceneStorage("DeviceTableViewConfig") private var columnCustomization: TableColumnCustomization<DevicesGridRow>
 
-		var body: some View {
-			ZStack {
-				if self.loading {
-					ProgressView()
-				}
-				if self.transpose && self.viewStyle != .simple {
-					Table(self.folders, selection: $selectedFolders) {
-						TableColumn("Folder") { folder in Label(folder.displayName, systemImage: "folder") }.width(ideal: 100)
-
-						TableColumnForEach(self.peers) { peer in
-							TableColumn(peer.displayName) { folder in
-								DevicesGridCellView(appState: appState, device: peer, folder: folder, viewStyle: viewStyle)
-									// Needed because for some reason SwiftUI doesn't propagate environment inside TableColumn
-									.environment(self.appState)
-							}.width(ideal: 50).alignment(.center)
-						}
-					}
-					.disabled(self.loading)
-				}
-				else {
-					Table(
-						of: DevicesGridRow.self, selection: $selectedPeers, columnCustomization: $columnCustomization,
-						columns: {
-							// Device name and label
-							TableColumn("Device") { (row: DevicesGridRow) in
-								switch row {
-								case .connectedDevice(let peer):
-									HStack {
-										Image(systemName: peer.systemImage).foregroundStyle(peer.displayColor)
-										Text(peer.displayName).foregroundStyle(Color.primary)
-										Spacer()
-									}.frame(maxWidth: .infinity)
-
-								case .discoveredDevice(let devID):
-									HStack {
-										Image(systemName: "plus").foregroundStyle(Color.accentColor)
-
-										Text(SushitrainShortDeviceID(devID)).compatMonospaced().foregroundStyle(Color.primary)
-										Spacer()
-									}.frame(maxWidth: .infinity)
-								}
-							}.width(min: 100, ideal: self.viewStyle == .simple ? 200 : 100, max: 500).defaultVisibility(.visible)
-								.customizationID("deviceName")
-
-							if viewStyle == .simple {
-								// Identicon
-								TableColumn("Fingerprint") { (row: DevicesGridRow) in
-									switch row {
-									case .connectedDevice(let peer):
-										IdenticonView(deviceID: peer.deviceID())
-											.padding(5)
-											// Needed because for some reason SwiftUI doesn't propagate environment inside TableColumn
-											.environment(self.appState)
-									case .discoveredDevice(let s):
-										IdenticonView(deviceID: s)
-											.padding(5)
-											// Needed because for some reason SwiftUI doesn't propagate environment inside TableColumn
-											.environment(self.appState)
-									}
-								}.width(min: 25, ideal: 25, max: 125).defaultVisibility(.hidden).customizationID("fingerprint")
-
-								// Short device ID
-								TableColumn("Short device ID") { (row: DevicesGridRow) in
-									switch row {
-									case .connectedDevice(let peer): Text(peer.shortDeviceID()).compatMonospaced()
-									case .discoveredDevice(let s): Text(SushitrainShortDeviceID(s)).compatMonospaced()
-									}
-								}.width(min: 80, ideal: 100).defaultVisibility(.automatic).customizationID("shortID")
-
-								// Long device ID
-								TableColumn("Device ID") { (row: DevicesGridRow) in
-									switch row {
-									case .connectedDevice(let peer): Text(peer.deviceID()).compatMonospaced()
-									case .discoveredDevice(let s): Text(s).compatMonospaced()
-									}
-								}.width(min: 100, ideal: 520).defaultVisibility(.hidden).customizationID("longID")
-
-								// Last seen device address
-								TableColumn("Last address") { (row: DevicesGridRow) in
-									switch row {
-									case .connectedDevice(let peer): Text(self.appState.client.getLastPeerAddress(peer.deviceID())).compatMonospaced()
-									case .discoveredDevice(let s): Text(self.appState.client.getLastPeerAddress(s)).compatMonospaced()
-									}
-								}.width(min: 100, ideal: 200).defaultVisibility(.hidden).customizationID("lastAddress")
-
-								Group {
-									// Introduced by
-									TableColumn("Introduced by") { (row: DevicesGridRow) in
-										switch row {
-										case .connectedDevice(let peer):
-											if let introducedBy = peer.introducedBy() {
-												Text(introducedBy.displayName)
-											}
-											else {
-												EmptyView()
-											}
-										case .discoveredDevice(_): EmptyView()
-										}
-									}.width(min: 100, ideal: 200).defaultVisibility(.hidden).customizationID("introducedBy")
-
-									// Trusted
-									TableColumn("Trusted") { (row: DevicesGridRow) in
-										switch row {
-										case .connectedDevice(let device):
-											Toggle(
-												isOn: Binding(get: { !device.isUntrusted() }, set: { trusted in try? device.setUntrusted(!trusted) })
-											) { EmptyView() }
-										case .discoveredDevice(_): EmptyView()
-										}
-									}.width(min: 50, ideal: 50, max: 50).alignment(.center).defaultVisibility(.hidden).customizationID("trusted")
-
-									// Enabled
-									TableColumn("Enabled") { (row: DevicesGridRow) in
-										switch row {
-										case .connectedDevice(let device):
-											Toggle(isOn: Binding(get: { !device.isPaused() }, set: { active in try? device.setPaused(!active) })) {
-												EmptyView()
-											}
-										case .discoveredDevice(_): EmptyView()
-										}
-									}.width(min: 50, ideal: 50, max: 50).alignment(.center).defaultVisibility(.hidden).customizationID("enabled")
-
-									// Latency
-									TableColumn("Latency") { (row: DevicesGridRow) in
-										switch row {
-										case .connectedDevice(let device):
-											if let latency = self.measurements[device.deviceID()], !latency.isNaN {
-												HStack {
-													LatencyView(latency: latency)
-													Spacer()
-													Text("\(Int(latency * 1000.0)) ms")
-												}
-											}
-										case .discoveredDevice(_): EmptyView()
-										}
-									}.width(min: 70, ideal: 70, max: 70).alignment(.numeric).defaultVisibility(.hidden).customizationID("latency")
-
-									// Introducer
-									TableColumn("Introducer") { (row: DevicesGridRow) in
-										switch row {
-										case .connectedDevice(let device):
-											Toggle(
-												isOn: Binding(get: { device.isIntroducer() }, set: { trusted in try? device.setIntroducer(trusted) })
-											) { EmptyView() }
-										case .discoveredDevice(_): EmptyView()
-										}
-									}.width(min: 50, ideal: 50, max: 50).alignment(.center).defaultVisibility(.hidden).customizationID(
-										"introducer")
-
-									// Last seen
-									TableColumn("Last seen") { (row: DevicesGridRow) in
-										switch row {
-										case .connectedDevice(let device):
-											if let lastSeen = device.lastSeen()?.date() {
-												Text(lastSeen.formatted())
-											}
-										case .discoveredDevice(_): EmptyView()
-										}
-									}.width(min: 100, ideal: 150).defaultVisibility(.hidden).customizationID("lastSeen")
-								}
-							}
-
-							if viewStyle != .simple {
-								TableColumnForEach(self.folders) { folder in
-									TableColumn(folder.displayName) { (row: DevicesGridRow) in
-										if case .connectedDevice(let peer) = row {
-											DevicesGridCellView(appState: self.appState, device: peer, folder: folder, viewStyle: viewStyle)
-												// Needed because for some reason SwiftUI doesn't propagate environment inside TableColumn
-												.environment(self.appState)
-										}
-										else {
-											EmptyView()
-										}
-									}.width(ideal: 50).alignment(.center)
-								}
-							}
-						},
-						rows: {
-							Section { ForEach(self.peers) { peer in TableRow(DevicesGridRow.connectedDevice(peer)) } }
-
-							if !discoveredNewDevices.isEmpty {
-								Section("Discovered devices") {
-									ForEach(discoveredNewDevices, id: \.self) { devID in TableRow(DevicesGridRow.discoveredDevice(devID)) }
-								}
-							}
-						}
-					)
-					.onDeleteCommand { confirmDeleteSelection = true }
-					.disabled(self.loading)
-					.confirmationDialog(
-						"Are you sure you want to unlink the selected devices?", isPresented: $confirmDeleteSelection,
-						titleVisibility: .visible
-					) {
-						Button("Unlink devices", role: .destructive) {
-							confirmDeleteSelection = false
-							self.unlinkSelectedDevices()
-						}
-					}
-					.contextMenu(
-						forSelectionType: SushitrainPeer.ID.self, menu: { items in Text("\(items.count) selected") },
-						primaryAction: self.doubleClick
-					)
-				}
+	var body: some View {
+		ZStack {
+			if self.loading {
+				ProgressView()
 			}
-			.task {
+			if self.transpose && self.viewStyle != .simple {
+				self.transposedTable
+			}
+			else {
+				self.normalTable
+			}
+		}
+		.task {
+			await self.update()
+		}
+		.compatNavigationDestination(isPresented: Binding.isNotNil($openedDevice)) {
+			self.nextView()
+		}
+		.toolbar {
+			self.toolbarContent
+		}.sheet(isPresented: $showingAddDevicePopup) {
+			AddDeviceView(suggestedDeviceID: $addingDeviceID)
+		}
+		.onAppear {
+			Task {
 				await self.update()
 			}
-			.compatNavigationDestination(isPresented: Binding.isNotNil($openedDevice)) {
-				self.nextView()
+		}
+		.onChange(of: appState.eventCounter) { _ in
+			Task {
+				await self.update()
 			}
-			.toolbar {
-				ToolbarItemGroup(placement: .primaryAction) {
-					Menu {
-						Picker("Show details", selection: $viewStyle) {
-							Text("Device information").tag(GridViewStyle.simple)
-							Text("Shared folders").tag(GridViewStyle.sharing)
-							Text("Completion").tag(GridViewStyle.percentageOfGlobal)
-							Text("Remaining").tag(GridViewStyle.needBytes)
-						}.pickerStyle(.inline)
-
-						Divider()
-
-						Toggle(isOn: $transpose) { Label("Switch rows/columns", systemImage: "rotate.right") }.disabled(
-							viewStyle == .simple)
-
-					} label: {
-						Label("Show details", systemImage: "slider.vertical.3")
-					}
-
-					Button("Add device", systemImage: "plus") {
-						addingDeviceID = ""
-						showingAddDevicePopup = true
-					}
-				}
-			}.sheet(isPresented: $showingAddDevicePopup) {
-				AddDeviceView(suggestedDeviceID: $addingDeviceID)
-			}
-			.onAppear {
+		}
+		.onChange(of: showingAddDevicePopup) { nv in
+			if !nv {
 				Task {
 					await self.update()
-				}
-			}
-			.onChange(of: appState.eventCounter) { _ in
-				Task {
-					await self.update()
-				}
-			}
-			// Update device list when add device popup is hidden again
-			.onChange(of: showingAddDevicePopup) { nv in
-				if !nv {
-					Task {
-						await self.update()
-					}
 				}
 			}
 		}
+	}
+
+	private var transposedTable: some View {
+		Table(self.folders, selection: $selectedFolders) {
+			TableColumn("Folder") { folder in Label(folder.displayName, systemImage: "folder") }.width(ideal: 100)
+
+			TableColumnForEach(self.peers) { peer in
+				TableColumn(peer.displayName) { folder in
+					DevicesGridCellView(appState: appState, device: peer, folder: folder, viewStyle: viewStyle)
+						.environment(self.appState)
+				}.width(ideal: 50).alignment(.center)
+			}
+		}
+		.disabled(self.loading)
+	}
+
+	private var normalTable: some View {
+		Table(
+			of: DevicesGridRow.self, selection: $selectedPeers, columnCustomization: $columnCustomization,
+			columns: { self.normalTableColumns },
+			rows: {
+				Section { ForEach(self.peers) { peer in TableRow(DevicesGridRow.connectedDevice(peer)) } }
+
+				if !discoveredNewDevices.isEmpty {
+					Section("Discovered devices") {
+						ForEach(discoveredNewDevices, id: \.self) { devID in TableRow(DevicesGridRow.discoveredDevice(devID)) }
+					}
+				}
+			}
+		)
+		.onDeleteCommand { confirmDeleteSelection = true }
+		.disabled(self.loading)
+		.confirmationDialog(
+			"Are you sure you want to unlink the selected devices?", isPresented: $confirmDeleteSelection,
+			titleVisibility: .visible
+		) {
+			Button("Unlink devices", role: .destructive) {
+				confirmDeleteSelection = false
+				self.unlinkSelectedDevices()
+			}
+		}
+		.contextMenu(
+			forSelectionType: SushitrainPeer.ID.self, menu: { items in Text("\(items.count) selected") },
+			primaryAction: self.doubleClick
+		)
+	}
+
+	@TableColumnBuilder<DevicesGridRow> private var normalTableColumns: some TableColumnContent<DevicesGridRow, EmptyView> {
+		TableColumn("Device") { (row: DevicesGridRow) in
+			switch row {
+			case .connectedDevice(let peer):
+				HStack {
+					Image(systemName: peer.systemImage).foregroundStyle(peer.displayColor)
+					Text(peer.displayName).foregroundStyle(Color.primary)
+					Spacer()
+				}.frame(maxWidth: .infinity)
+
+			case .discoveredDevice(let devID):
+				HStack {
+					Image(systemName: "plus").foregroundStyle(Color.accentColor)
+					Text(SushitrainShortDeviceID(devID)).compatMonospaced().foregroundStyle(Color.primary)
+					Spacer()
+				}.frame(maxWidth: .infinity)
+			}
+		}.width(min: 100, ideal: self.viewStyle == .simple ? 200 : 100, max: 500).defaultVisibility(.visible)
+			.customizationID("deviceName")
+
+		if viewStyle == .simple {
+			self.simpleViewColumns
+		}
+
+		if viewStyle != .simple {
+			TableColumnForEach(self.folders) { folder in
+				TableColumn(folder.displayName) { (row: DevicesGridRow) in
+					if case .connectedDevice(let peer) = row {
+						DevicesGridCellView(appState: self.appState, device: peer, folder: folder, viewStyle: viewStyle)
+							.environment(self.appState)
+					}
+					else {
+						EmptyView()
+					}
+				}.width(ideal: 50).alignment(.center)
+			}
+		}
+	}
+
+	@TableColumnBuilder<DevicesGridRow> private var simpleViewColumns: some TableColumnContent<DevicesGridRow, EmptyView> {
+		TableColumn("Fingerprint") { (row: DevicesGridRow) in
+			switch row {
+			case .connectedDevice(let peer):
+				IdenticonView(deviceID: peer.deviceID())
+					.padding(5)
+					.environment(self.appState)
+			case .discoveredDevice(let s):
+				IdenticonView(deviceID: s)
+					.padding(5)
+					.environment(self.appState)
+			}
+		}.width(min: 25, ideal: 25, max: 125).defaultVisibility(.hidden).customizationID("fingerprint")
+
+		TableColumn("Short device ID") { (row: DevicesGridRow) in
+			switch row {
+			case .connectedDevice(let peer): Text(peer.shortDeviceID()).compatMonospaced()
+			case .discoveredDevice(let s): Text(SushitrainShortDeviceID(s)).compatMonospaced()
+			}
+		}.width(min: 80, ideal: 100).defaultVisibility(.automatic).customizationID("shortID")
+
+		TableColumn("Device ID") { (row: DevicesGridRow) in
+			switch row {
+			case .connectedDevice(let peer): Text(peer.deviceID()).compatMonospaced()
+			case .discoveredDevice(let s): Text(s).compatMonospaced()
+			}
+		}.width(min: 100, ideal: 520).defaultVisibility(.hidden).customizationID("longID")
+
+		TableColumn("Last address") { (row: DevicesGridRow) in
+			switch row {
+			case .connectedDevice(let peer): Text(self.appState.client.getLastPeerAddress(peer.deviceID())).compatMonospaced()
+			case .discoveredDevice(let s): Text(self.appState.client.getLastPeerAddress(s)).compatMonospaced()
+			}
+		}.width(min: 100, ideal: 200).defaultVisibility(.hidden).customizationID("lastAddress")
+
+		self.simpleViewDetailColumns
+	}
+
+	@TableColumnBuilder<DevicesGridRow> private var simpleViewDetailColumns: some TableColumnContent<DevicesGridRow, EmptyView> {
+		TableColumn("Introduced by") { (row: DevicesGridRow) in
+			switch row {
+			case .connectedDevice(let peer):
+				if let introducedBy = peer.introducedBy() {
+					Text(introducedBy.displayName)
+				}
+				else {
+					EmptyView()
+				}
+			case .discoveredDevice(_): EmptyView()
+			}
+		}.width(min: 100, ideal: 200).defaultVisibility(.hidden).customizationID("introducedBy")
+
+		TableColumn("Trusted") { (row: DevicesGridRow) in
+			switch row {
+			case .connectedDevice(let device):
+				Toggle(
+					isOn: Binding(get: { !device.isUntrusted() }, set: { trusted in try? device.setUntrusted(!trusted) })
+				) { EmptyView() }
+			case .discoveredDevice(_): EmptyView()
+			}
+		}.width(min: 50, ideal: 50, max: 50).alignment(.center).defaultVisibility(.hidden).customizationID("trusted")
+
+		TableColumn("Enabled") { (row: DevicesGridRow) in
+			switch row {
+			case .connectedDevice(let device):
+				Toggle(isOn: Binding(get: { !device.isPaused() }, set: { active in try? device.setPaused(!active) })) {
+					EmptyView()
+				}
+			case .discoveredDevice(_): EmptyView()
+			}
+		}.width(min: 50, ideal: 50, max: 50).alignment(.center).defaultVisibility(.hidden).customizationID("enabled")
+
+		TableColumn("Latency") { (row: DevicesGridRow) in
+			switch row {
+			case .connectedDevice(let device):
+				if let latency = self.measurements[device.deviceID()], !latency.isNaN {
+					HStack {
+						LatencyView(latency: latency)
+						Spacer()
+						Text("\(Int(latency * 1000.0)) ms")
+					}
+				}
+			case .discoveredDevice(_): EmptyView()
+			}
+		}.width(min: 70, ideal: 70, max: 70).alignment(.numeric).defaultVisibility(.hidden).customizationID("latency")
+
+		TableColumn("Introducer") { (row: DevicesGridRow) in
+			switch row {
+			case .connectedDevice(let device):
+				Toggle(
+					isOn: Binding(get: { device.isIntroducer() }, set: { trusted in try? device.setIntroducer(trusted) })
+				) { EmptyView() }
+			case .discoveredDevice(_): EmptyView()
+			}
+		}.width(min: 50, ideal: 50, max: 50).alignment(.center).defaultVisibility(.hidden).customizationID("introducer")
+
+		TableColumn("Last seen") { (row: DevicesGridRow) in
+			switch row {
+			case .connectedDevice(let device):
+				if let lastSeen = device.lastSeen()?.date() {
+					Text(lastSeen.formatted())
+				}
+			case .discoveredDevice(_): EmptyView()
+			}
+		}.width(min: 100, ideal: 150).defaultVisibility(.hidden).customizationID("lastSeen")
+	}
+
+	@ToolbarContentBuilder private var toolbarContent: some ToolbarContent {
+		ToolbarItemGroup(placement: .primaryAction) {
+			Menu {
+				Picker("Show details", selection: $viewStyle) {
+					Text("Device information").tag(GridViewStyle.simple)
+					Text("Shared folders").tag(GridViewStyle.sharing)
+					Text("Completion").tag(GridViewStyle.percentageOfGlobal)
+					Text("Remaining").tag(GridViewStyle.needBytes)
+				}.pickerStyle(.inline)
+
+				Divider()
+
+				Toggle(isOn: $transpose) { Label("Switch rows/columns", systemImage: "rotate.right") }.disabled(
+					viewStyle == .simple)
+
+			} label: {
+				Label("Show details", systemImage: "slider.vertical.3")
+			}
+
+			Button("Add device", systemImage: "plus") {
+				addingDeviceID = ""
+				showingAddDevicePopup = true
+			}
+		}
+	}
 
 		@ViewBuilder private func nextView() -> some View {
 			if let device = self.openedDevice {

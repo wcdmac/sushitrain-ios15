@@ -34,127 +34,122 @@ import SwiftUI
 		@State private var keepFolderStructure = true
 
 		var body: some View {
-			HStack {
-				HSplitView {
-					// Left pane: Encryption settings
-					Form {
-						Section("Encrypted folder") {
-							CompatLabeledContent("Folder") {
-								HStack {
-									Text(sourceURL?.lastPathComponent ?? "")
-									Button("Select...") {
-										showPickerFor = .source
-										showPicker = true
-									}
-								}
-							}
-
-							CompatLabeledContent("Folder ID") {
-								TextField("", text: $folderID).textFieldStyle(.roundedBorder)
-							}
-
-							CompatLabeledContent("Encryption password") {
-								TextField("", text: $folderPassword).textFieldStyle(.roundedBorder).textContentType(.password)
-							}
-
-							Button("Decrypt file list") {
-								self.refresh()
-							}
-							.disabled(folderPassword.isEmpty || folderID.isEmpty || sourceURL == nil)
-						}
-
-						Section("\(selectedURLs.count) files selected") {
-							CompatLabeledContent("Folder") {
-								HStack {
-									Text(destURL?.lastPathComponent ?? "")
-									Button("Select...") {
-										showPickerFor = .dest
-										showPicker = true
-									}
-								}
-							}
-
-							Toggle(isOn: $keepFolderStructure) {
-								Text("Recreate folder structure")
-							}
-
-							Button("Decrypt \(selectedURLs.count) files") {
-								Task {
-									await self.decryptSelection()
-								}
-							}.disabled(destURL == nil)
-						}.disabled(folderPassword.isEmpty || folderID.isEmpty || sourceURL == nil || selectedURLs.isEmpty)
-					}
-					.formStyle(.grouped)
-					.disabled(loading)
-					.frame(minWidth: 250, idealWidth: 250, maxWidth: 320, maxHeight: .infinity)
-
-					// Right pane
-					Group {
-						if loading {
-							ProgressView()
-						}
-						else if let e = error {
-							CompatContentUnavailableCustomView {
-								Label("Could not decrypt folder", systemImage: "exclamationmark.triangle.fill")
-							} description: {
-								Text(e.localizedDescription)
-							}
-						}
-						else if sourceURL != nil && !folderID.isEmpty && !folderPassword.isEmpty {
-							// List of files
-							DecrypterItemsView(
-								folderID: folderID, folderPassword: folderPassword,
-								entries: searchText.isEmpty ? allEntries : foundEntries,
-								selectedURLs: $selectedURLs
-							)
-							.id(searchText)
-						}
-						else {
-							CompatContentUnavailableCustomView {
-								Label("No encrypted folder selected", systemImage: "questionmark.folder")
-							}
-						}
-					}.frame(minWidth: 400, maxWidth: .infinity, maxHeight: .infinity)
-				}
-				.frame(maxWidth: .infinity, maxHeight: .infinity)
-				.fileImporter(isPresented: $showPicker, allowedContentTypes: [.directory]) { (result) in
-					switch (result, showPickerFor) {
-					case (.success(let url), .source):
-						self.sourceURL = url
-						self.error = nil
-						if self.folderID.isEmpty {
-							self.folderID = url.lastPathComponent
-						}
-					case (.success(let url), .dest):
-						self.destURL = url
-						self.error = nil
-					case (.failure(let err), .source):
-						self.sourceURL = nil
-						self.error = err
-					case (.failure(_), .dest):
-						self.destURL = nil
-					default:
-						break
-					}
-					self.showPicker = false
-					self.showPickerFor = nil
-				}
-				.navigationTitle(self.sourceURL?.lastPathComponent ?? String(localized: "Decrypt folder"))
-				.searchable(text: $searchText, prompt: "Zoek bestand...")
-				.onChange(of: sourceURL) { _ in
-					self.refresh()
-				}
-				.onChange(of: searchText) { _ in
-					self.updateSearch()
-				}
-				.alert("Decryption completed", isPresented: $showSuccessMessage) {
-					Button("OK") {}
-				}
+		HStack {
+			HSplitView {
+				self.leftPane
+				self.rightPane
 			}
 		}
+		.fileImporter(isPresented: $showPicker, allowedContentTypes: [.folder], onSelection: { result in
+			if case .success = result {
+				if let url = try? result.get() {
+					if showPickerFor == .source {
+						sourceURL = url
+						folderID = url.lastPathComponent
+					} else {
+						destURL = url
+					}
+				}
+			}
+		})
+		.navigationTitle(self.sourceURL?.lastPathComponent ?? String(localized: "Decrypt folder"))
+		.searchable(text: $searchText, prompt: "Zoek bestand...")
+		.onChange(of: sourceURL) { _ in
+			self.refresh()
+		}
+		.onChange(of: searchText) { _ in
+			self.updateSearch()
+		}
+		.alert("Decryption completed", isPresented: $showSuccessMessage) {
+			Button("OK") {}
+		} message: {
+			Text("The selected files have been decrypted and placed in the destination folder.")
+		}
+	}
 
-		private func enumerate(
+	private var leftPane: some View {
+		Form {
+			Section("Encrypted folder") {
+				CompatLabeledContent("Folder") {
+					HStack {
+						Text(sourceURL?.lastPathComponent ?? "")
+						Button("Select...") {
+							showPickerFor = .source
+							showPicker = true
+						}
+					}
+				}
+
+				CompatLabeledContent("Folder ID") {
+					TextField("", text: $folderID).textFieldStyle(.roundedBorder)
+				}
+
+				CompatLabeledContent("Encryption password") {
+					TextField("", text: $folderPassword).textFieldStyle(.roundedBorder).textContentType(.password)
+				}
+
+				Button("Decrypt file list") {
+					self.refresh()
+				}
+				.disabled(folderPassword.isEmpty || folderID.isEmpty || sourceURL == nil)
+			}
+
+			Section("\(selectedURLs.count) files selected") {
+				CompatLabeledContent("Folder") {
+					HStack {
+						Text(destURL?.lastPathComponent ?? "")
+						Button("Select...") {
+							showPickerFor = .dest
+							showPicker = true
+						}
+					}
+				}
+
+				Toggle(isOn: $keepFolderStructure) {
+					Text("Recreate folder structure")
+				}
+
+				Button("Decrypt \(selectedURLs.count) files") {
+					Task {
+						await self.decryptSelection()
+					}
+				}.disabled(destURL == nil)
+			}.disabled(folderPassword.isEmpty || folderID.isEmpty || sourceURL == nil || selectedURLs.isEmpty)
+		}
+		.formStyle(.grouped)
+		.disabled(loading)
+		.frame(minWidth: 250, idealWidth: 250, maxWidth: 320, maxHeight: .infinity)
+	}
+
+	private var rightPane: some View {
+		Group {
+			if loading {
+				ProgressView()
+			}
+			else if let e = error {
+				CompatContentUnavailableCustomView {
+					Label("Could not decrypt folder", systemImage: "exclamationmark.triangle.fill")
+				} description: {
+					Text(e.localizedDescription)
+				}
+			}
+			else if sourceURL != nil && !folderID.isEmpty && !folderPassword.isEmpty {
+				DecrypterItemsView(
+					folderID: folderID, folderPassword: folderPassword,
+					entries: searchText.isEmpty ? allEntries : foundEntries,
+					selectedURLs: $selectedURLs
+				)
+				.id(searchText)
+			}
+			else {
+				CompatContentUnavailableCustomView {
+					Label("No encrypted folder selected", systemImage: "questionmark.folder")
+				}
+			}
+		}.frame(minWidth: 400, maxWidth: .infinity, maxHeight: .infinity)
+	}
+
+	private func enumerate(
 			fileManager: FileManager, url: URL, folderKey: SushitrainFolderKey, entries: inout [EncryptedFileEntry]
 		) async throws {
 			let children = try fileManager.contentsOfDirectory(

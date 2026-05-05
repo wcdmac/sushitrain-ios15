@@ -49,7 +49,7 @@ struct NavigateToAction {
 }
 
 private struct NavigateToKey: EnvironmentKey {
-	static let defaultValue = NavigateToAction(action: { _ in })
+	nonisolated(unsafe) static let defaultValue = NavigateToAction(action: { _ in })
 }
 
 extension EnvironmentValues {
@@ -335,8 +335,8 @@ private struct ContentView: View {
 				}
 			}
 		#endif
-		.onChange(of: scenePhase) { oldPhase, newPhase in
-			self.appState.onScenePhaseChange(from: oldPhase, to: newPhase)
+		.onChange(of: scenePhase) { newPhase in
+			self.appState.onScenePhaseChange(to: newPhase)
 
 			#if os(iOS)
 				if newPhase != .active && self.appState.userSettings.rehideHiddenFoldersOnActivate {

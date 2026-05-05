@@ -190,7 +190,7 @@ private struct PhotoFolderAlbumSettingsView: View {
 						}
 					}
 					.pickerStyle(.menu)
-					.onChange(of: config.albumID) { _, newValue in
+					.onChange(of: config.albumID) { newValue in
 						// Set directory name to album name in case no directory name was entered yet
 						if self.dirName.isEmpty {
 							// Find album name

@@ -682,7 +682,7 @@ struct LatencyView: View {
 				}
 			}
 			// Update device list when add device popup is hidden again
-			.onChange(of: showingAddDevicePopup) { _, nv in
+			.onChange(of: showingAddDevicePopup) { nv in
 				if !nv {
 					Task {
 						await self.update()

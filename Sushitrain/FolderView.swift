@@ -296,8 +296,8 @@ struct FolderSyncTypePicker: View {
 				Text("(Unknown)").tag(nil as FolderSyncType?).disabled(true).disabled(true)
 			}
 		}
-		.onChange(of: folderSyncType) { ov, nv in
-			if let nv = nv, ov != nv && ov != nil {
+		.onChange(of: folderSyncType) { nv in
+			if let nv = nv {
 				do {
 					try self.folder.setSelective(nv == .selectedFiles)
 				}
@@ -391,8 +391,8 @@ struct FolderDirectionPicker: View {
 			.onAppear {
 				self.update()
 			}
-			.onChange(of: folderType) { ov, nv in
-				if let nv = nv, ov != nil && nv != ov {
+			.onChange(of: folderType) { nv in
+				if let nv = nv {
 					Log.info("changing folder type to \(nv) for folder \(self.folder.folderID)")
 					try? self.folder.setFolderType(nv)
 				}

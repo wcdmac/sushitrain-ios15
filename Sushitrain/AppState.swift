@@ -858,8 +858,8 @@ struct SyncState {
 		}
 	}
 
-	func onScenePhaseChange(from oldPhase: ScenePhase, to newPhase: ScenePhase) {
-		Log.info("Phase change from \(oldPhase) to \(newPhase) lingeringEnabled=\(self.userSettings.lingeringEnabled)")
+	func onScenePhaseChange(to newPhase: ScenePhase) {
+		Log.info("Phase change to \(newPhase) lingeringEnabled=\(self.userSettings.lingeringEnabled)")
 
 		switch newPhase {
 		case .background:

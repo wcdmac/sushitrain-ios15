@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2025 Tommy van der Vorst
+// Copyright (C) 2025 Tommy van der Vorst
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -65,11 +65,11 @@ struct ZipView: View {
 			Table(files, selection: $selectedFiles, columnCustomization: $columnCustomization) {
 				TableColumn("File") { file in
 					if archive.isDirectory(file.name) {
-						let fileName = String(file.name.trimmingPrefix(self.prefix))
+						let fileName = String(file.name.compatTrimmingPrefix(self.prefix))
 						Label(fileName.withoutEndingSlash, systemImage: "folder")
 					}
 					else {
-						let fileName = String(file.name.trimmingPrefix(self.prefix))
+						let fileName = String(file.name.compatTrimmingPrefix(self.prefix))
 						Label(fileName, systemImage: "doc.fill")
 					}
 				}
@@ -99,7 +99,7 @@ struct ZipView: View {
 	#if os(iOS)
 		@ViewBuilder private func listBody() -> some View {
 			List(files, id: \.self) { file in
-				let fileName = String(file.name.trimmingPrefix(self.prefix))
+				let fileName = String(file.name.compatTrimmingPrefix(self.prefix))
 				if archive.isDirectory(file.name) {
 					NavigationLink(destination: ZipView(archive: self.archive, prefix: file.name)) {
 						Label(fileName.withoutEndingSlash, systemImage: "folder.fill")

@@ -396,14 +396,14 @@ struct LatencyView: View {
 #endif
 
 #if os(macOS)
-	private enum GridViewStyle: String {
+private enum GridViewStyle: String {
 		case simple = "simple"
 		case sharing = "sharing"
 		case percentageOfGlobal = "percentageOfGlobal"
 		case needBytes = "needBytes"
 	}
 
-	private struct DevicesGridView: View {
+private struct DevicesGridView: View {
 		private enum DevicesGridRow: Identifiable {
 			var id: String {
 				switch self {

@@ -40,14 +40,14 @@ extension String {
 		}
 	}
 
-	func compatTrimmingPrefix(_ prefix: String) -> String.SubSequence {
+	func compatTrimmingPrefix(_ prefix: String) -> String {
 		if #available(iOS 16, macOS 13, *) {
-			return self.trimmingPrefix(prefix)
+			return String(self.trimmingPrefix(prefix))
 		} else {
 			if self.hasPrefix(prefix) {
-				return self[self.index(self.startIndex, offsetBy: prefix.count)...]
+				return String(self[self.index(self.startIndex, offsetBy: prefix.count)...])
 			}
-			return self[...]
+			return self
 		}
 	}
 }
@@ -70,19 +70,19 @@ func compatCachesDirectory() -> URL {
 }
 
 extension View {
-	func compatBold(_ isActive: Bool = true) -> some View {
+	@ViewBuilder func compatBold(_ isActive: Bool = true) -> some View {
 		if #available(iOS 16, macOS 13, *) {
-			return self.bold(isActive)
+			self.bold(isActive)
 		} else {
-			return self.font(isActive ? .body.bold() : .body)
+			self.font(isActive ? .body.bold() : .body)
 		}
 	}
 
-	func compatMonospaced() -> some View {
+	@ViewBuilder func compatMonospaced() -> some View {
 		if #available(iOS 16.4, macOS 13.3, *) {
-			return self.monospaced()
+			self.monospaced()
 		} else {
-			return self.font(.system(.body, design: .monospaced))
+			self.font(.system(.body, design: .monospaced))
 		}
 	}
 }

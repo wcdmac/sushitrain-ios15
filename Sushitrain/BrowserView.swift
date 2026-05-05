@@ -199,9 +199,9 @@ struct BrowserView: View {
 					.navigationTitle("Search in this folder")
 					.navigationBarTitleDisplayMode(.inline)
 					.toolbar {
-						ToolbarItem(placement: .cancellationAction) { Button("Cancel") { 
+						SheetButton(role: .cancel) {
 							showSearch = false
-						 } }
+						}
 					}
 				}
 			}
@@ -219,9 +219,9 @@ struct BrowserView: View {
 				CompatNavigationStack {
 					FolderStatisticsView(folder: folder)
 					.toolbar {
-						ToolbarItem(placement: .confirmationAction) { Button("Done") { 
+						SheetButton(role: .done) {
 							showFolderStatistics = false
-						 } }
+						}
 					}
 				}
 			}
@@ -230,9 +230,9 @@ struct BrowserView: View {
 			CompatNavigationStack {
 				FolderView(folder: self.folder)
 					.toolbar {
-						ToolbarItem(placement: .confirmationAction) { Button("Save") { 
+						SheetButton(role: .save) {
 							showSettings = false
-						 } }
+						}
 					}
 			}
 		}
@@ -244,9 +244,9 @@ struct BrowserView: View {
 					.presentationSizing(.fitted)
 					.frame(minWidth: 640, minHeight: 480)
 					.toolbar {
-						ToolbarItem(placement: .confirmationAction) { Button("Done") { 
+						SheetButton(role: .done) {
 							showIgnores = false
-						 } }
+						}
 					}
 				}
 			}
@@ -1063,9 +1063,9 @@ private struct BrowserItemsView: View {
 								CompatNavigationStack {
 									FolderStatisticsView(folder: folder)
 										.toolbar {
-											ToolbarItem(placement: .confirmationAction) { Button("Done") { 
+											SheetButton(role: .done) {
 												showStatistics = false
-											 } }
+											}
 										}
 								}
 							}

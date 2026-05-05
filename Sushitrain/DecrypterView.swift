@@ -172,7 +172,7 @@ import SwiftUI
 					let rootPath = self.sourceURL!.compatPath(percentEncoded: false)
 					let filePath = c.compatPath(percentEncoded: false)
 					var error: NSError? = nil
-					let trimmedPath = String(filePath.compatTrimmingPrefix(rootPath))
+					let trimmedPath = String(filePath.trimmingPrefix(rootPath))
 					if trimmedPath.starts(with: ".stfolder") {
 						continue
 					}
@@ -212,7 +212,7 @@ import SwiftUI
 
 							let rootPath = sourceURL!.compatPath(percentEncoded: false)
 							let filePath = entry.url.compatPath(percentEncoded: false)
-							let trimmedPath = String(filePath.compatTrimmingPrefix(rootPath))
+							let trimmedPath = String(filePath.trimmingPrefix(rootPath))
 							let encryptedPath = EncryptedFilePath(trimmedPath)
 							Log.info("Decrypt \(trimmedPath) \(sourceURL!) \(destURL!) \(entry.version ?? "current version")")
 							try folderKey?.decryptFile(
@@ -369,7 +369,7 @@ private struct EncryptedFilePath {
 			if let tildeIndex = originalPath.lastIndex(of: "~"), tildeIndex != originalPath.endIndex {
 				self.version = String(originalPath[originalPath.index(after: tildeIndex)...])
 				self.pathWithoutVersion = String(
-					String(originalPath[...originalPath.index(before: tildeIndex)]).compatTrimmingPrefix(".stversions/"))
+					String(originalPath[...originalPath.index(before: tildeIndex)]).trimmingPrefix(".stversions/"))
 				return
 			}
 		}

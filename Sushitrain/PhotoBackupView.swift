@@ -131,7 +131,7 @@ struct PhotoBackupSettingsView: View {
 					}
 					.pickerStyle(.menu)
 					.disabled(photoBackup.isBackingUp)
-					.onChange(of: photoBackup.selectedAlbumID) { _ in photoBackup.compatResetChangeToken() }
+					.onChange(of: photoBackup.selectedAlbumID) { _ in photoBackup.resetLastSuccessfulChangeToken() }
 				}
 				else if authorizationStatus == .denied || authorizationStatus == .restricted {
 					Text("Synctrain cannot access your photo library right now")
@@ -157,7 +157,7 @@ struct PhotoBackupSettingsView: View {
 					}
 					.pickerStyle(.menu)
 					.disabled(photoBackup.isBackingUp || photoBackup.selectedAlbumID.isEmpty)
-					.onChange(of: photoBackup.selectedFolderID) { _ in photoBackup.compatResetChangeToken() }
+					.onChange(of: photoBackup.selectedFolderID) { _ in photoBackup.resetLastSuccessfulChangeToken() }
 				}
 			} header: {
 				Text("Copy photos")
@@ -188,7 +188,7 @@ struct PhotoBackupSettingsView: View {
 						})
 				)
 				.disabled(photoBackup.isBackingUp || photoBackup.selectedAlbumID.isEmpty)
-				.onChange(of: photoBackup.categories) { _ in photoBackup.compatResetChangeToken() }
+				.onChange(of: photoBackup.categories) { _ in photoBackup.resetLastSuccessfulChangeToken() }
 
 				Toggle(
 					"Live photos",
@@ -218,14 +218,14 @@ struct PhotoBackupSettingsView: View {
 							.autocorrectionDisabled()
 							.autocapitalization(.none)
 						#endif
-						.onChange(of: photoBackup.subDirectoryPath) { _ in photoBackup.compatResetChangeToken() }
+						.onChange(of: photoBackup.subDirectoryPath) { _ in photoBackup.resetLastSuccessfulChangeToken() }
 				} label: {
 					Text("Path in folder")
 				}
 
 				PhotoFolderStructureView(folderStructure: photoBackup.$folderStructure)
 					.disabled(photoBackup.isBackingUp)
-					.onChange(of: photoBackup.folderStructure) { _ in photoBackup.compatResetChangeToken() }
+					.onChange(of: photoBackup.folderStructure) { _ in photoBackup.resetLastSuccessfulChangeToken() }
 
 				Text("Example file location in folder: \(photoBackup.subDirectoryPath)/\(photoBackup.folderStructure.examplePath)")
 					.font(.system(.body, design: .monospaced))
@@ -240,7 +240,7 @@ struct PhotoBackupSettingsView: View {
 				Section {
 					PhotoBackupTimeZoneView(timeZone: photoBackup.$timeZone)
 						.disabled(photoBackup.isBackingUp)
-						.onChange(of: photoBackup.timeZone) { _ in photoBackup.compatResetChangeToken() }
+						.onChange(of: photoBackup.timeZone) { _ in photoBackup.resetLastSuccessfulChangeToken() }
 				} footer: {
 					PhotoBackupTimeZoneExplainerView(timeZone: photoBackup.timeZone)
 				}
@@ -258,7 +258,7 @@ struct PhotoBackupSettingsView: View {
 					photoBackup.isBackingUp || self.authorizationStatus != .authorized
 						|| photoBackup.selectedAlbumID.isEmpty
 				)
-				.onChange(of: photoBackup.savedAlbumID) { _ in photoBackup.compatResetChangeToken() }
+				.onChange(of: photoBackup.savedAlbumID) { _ in photoBackup.resetLastSuccessfulChangeToken() }
 			} header: {
 				Text("After saving")
 			} footer: {
@@ -271,7 +271,7 @@ struct PhotoBackupSettingsView: View {
 
 			Section {
 				Toggle("Remove saved photos from source", isOn: photoBackup.$purgeEnabled)
-					.onChange(of: photoBackup.purgeEnabled) { _ in photoBackup.compatResetChangeToken() }
+					.onChange(of: photoBackup.purgeEnabled) { _ in photoBackup.resetLastSuccessfulChangeToken() }
 
 				if photoBackup.purgeEnabled {
 					Stepper(
@@ -362,7 +362,10 @@ struct PhotoBackupSettingsView: View {
 			}
 		}
 		.navigationTitle("Photo back-up")
-				#if os(iOS)
+		#if os(macOS)
+			
+		#endif
+		#if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
 		#endif
 		.task {

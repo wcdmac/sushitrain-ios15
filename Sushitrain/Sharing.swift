@@ -26,7 +26,7 @@ import UniformTypeIdentifiers
 
 	private func downloadFileToSent() async throws -> SentTransferredFile {
 		let tempDir = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
-		let tempDirPath = tempDir.appending(
+		let tempDirPath = tempDir.compatAppending(
 			component: "Downloads-\(ProcessInfo().globallyUniqueString)")
 		try FileManager.default.createDirectory(at: tempDirPath, withIntermediateDirectories: true)
 		let filePath = tempDirPath.compatAppending(component: self.fileName())

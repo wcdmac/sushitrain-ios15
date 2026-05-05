@@ -206,9 +206,9 @@ struct AdvancedSettingsView: View {
 						AsyncAddressesView(addressType: .listening)
 							.navigationTitle("Listening addresses")
 							.toolbar {
-								ToolbarItem(placement: .confirmationAction) { Button("Save") { 
+								SheetButton(role: .save) {
 									showListeningAddresses = false
-								 } }
+								}
 							}
 					}
 				}
@@ -286,9 +286,9 @@ struct AdvancedSettingsView: View {
 						AsyncAddressesView(addressType: .discovery)
 							.navigationTitle("Global announce servers")
 							.toolbar {
-								ToolbarItem(placement: .confirmationAction) { Button("Save") { 
+								SheetButton(role: .save) {
 									showDiscoveryAddresses = false
-								 } }
+								}
 							}
 					}
 				}
@@ -341,9 +341,9 @@ struct AdvancedSettingsView: View {
 						AsyncAddressesView(addressType: .stun)
 							.navigationTitle("STUN servers")
 							.toolbar {
-								ToolbarItem(placement: .confirmationAction) { Button("Save") { 
+								SheetButton(role: .save) {
 									showSTUNAddresses = false
-								 } }
+								}
 							}
 					}
 				}
@@ -423,9 +423,9 @@ struct AdvancedSettingsView: View {
 						CompatNavigationStack {
 							TroubleshootingView(userSettings: userSettings)
 								.toolbar {
-									ToolbarItem(placement: .confirmationAction) { Button("Done") { 
+									SheetButton(role: .done) {
 										showTroubleshooting = false
-									 } }
+									}
 								}
 						}
 					}
@@ -438,9 +438,9 @@ struct AdvancedSettingsView: View {
 					.sheet(isPresented: $showConfigurationSettings) {
 						ConfigurationSettingsView()
 							.toolbar {
-								ToolbarItem(placement: .confirmationAction) { Button("Done") { 
+								SheetButton(role: .done) {
 									showConfigurationSettings = false
-								 } }
+								}
 							}
 					}
 			#else

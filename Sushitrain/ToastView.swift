@@ -40,7 +40,7 @@ struct ShowToastAction {
 }
 
 private struct ShowToastKey: EnvironmentKey {
-	nonisolated(unsafe) static let defaultValue = ShowToastAction(action: { _ in })
+	static let defaultValue = ShowToastAction(action: { _ in })
 }
 
 extension EnvironmentValues {

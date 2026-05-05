@@ -426,4 +426,3 @@ private struct EntryNameView: View {
 		}
 	}
 }
-#endif

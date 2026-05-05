@@ -128,7 +128,7 @@ struct EntryDownloaderView: View {
 		.task {
 			do {
 				let tempDir = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
-				tempDirPath = tempDir.appending(
+				tempDirPath = tempDir.compatAppending(
 					component: "Downloads-\(ProcessInfo().globallyUniqueString)")
 				try FileManager.default.createDirectory(
 					at: tempDirPath!, withIntermediateDirectories: true)

@@ -208,7 +208,7 @@ private struct SupportBundleView: View {
 				let appBundleJSON = try encoder.encode(appBundle)
 
 				let tempDir = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
-				let tempPath = tempDir.appending(
+				let tempPath = tempDir.compatAppending(
 					component: "Synctrain-support-bundle-\(ProcessInfo().globallyUniqueString).zip")
 				try self.appState.client.writeSupportBundle(tempPath.compatPath(percentEncoded: false), appInfo: appBundleJSON)
 

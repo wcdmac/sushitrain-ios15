@@ -362,7 +362,9 @@ struct PhotoBackupSettingsView: View {
 			}
 		}
 		.navigationTitle("Photo back-up")
+		#if os(iOS)
 		.navigationBarTitleDisplayMode(.inline)
+		#endif
 		.task {
 			await self.update()
 		}

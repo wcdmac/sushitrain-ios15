@@ -163,19 +163,19 @@ private struct SupportBundleView: View {
 			#endif
 
 			if let s = supportBundle {
-					Label("Share information bundle for support", systemImage: "text.page.badge.magnifyingglass")
-				if #available(iOS 16, *) {
+				if #available(iOS 16, macOS 13, *) {
 				ShareLink(item: s, subject: Text("Support bundle"), message: Text("Support bundle"), preview: self.sharePreview()) {
 					Label("Share information bundle for support", systemImage: "text.page.badge.magnifyingglass")
-				}
-				} else {
-					Button("Share...") {
-						// Share not available on iOS 15
-					}
 				}
 				#if os(macOS)
 					.buttonStyle(.link)
 				#endif
+				} else {
+					#if os(iOS)
+					Button("Share information bundle for support", systemImage: "text.page.badge.magnifyingglass") {
+					}
+					#endif
+				}
 
 				#if os(macOS)
 					Button("Save support bundle", systemImage: "text.page.badge.magnifyingglass") {

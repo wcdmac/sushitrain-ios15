@@ -52,11 +52,13 @@ extension String {
 	}
 }
 
+#if os(iOS)
 extension UIApplication {
 	func compatSetBadgeCount(_ count: Int) {
 		UIApplication.shared.applicationIconBadgeNumber = count
 	}
 }
+#endif
 
 @available(iOS 16, macOS 13, *)
 struct CompatCachesDirectory {

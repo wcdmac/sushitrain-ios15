@@ -27,7 +27,9 @@ struct CompatNavigationStack<Content: View>: View {
 			NavigationView {
 				content()
 			}
+			#if os(iOS)
 			.navigationViewStyle(StackNavigationViewStyle())
+			#endif
 		}
 	}
 }

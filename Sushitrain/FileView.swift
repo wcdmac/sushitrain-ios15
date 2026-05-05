@@ -817,6 +817,7 @@ struct FileSharingLinksView: View {
 								.buttonStyle(.link)
 							#endif
 					} else {
+						#if os(iOS)
 						Button(action: {
 							let av = UIActivityViewController(activityItems: [link], applicationActivities: nil)
 							if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -826,6 +827,7 @@ struct FileSharingLinksView: View {
 						}) {
 							Label("Share external link", systemImage: "link.circle")
 						}
+						#endif
 					}
 				}
 				else {

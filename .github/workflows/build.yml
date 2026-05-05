@@ -3,6 +3,8 @@ name: "Build iOS+macOS app"
 on:
   pull_request:
   push:
+    tags:
+      - 'v*'
 
 env:
   GO_VERSION: "~1.26.0"
@@ -10,7 +12,7 @@ env:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
   attestations: write
 
 jobs:
@@ -31,11 +33,6 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
-      - name: Lint
-        if: false
-        run: |
-          make lint
-
       - name: Install Go
         uses: actions/setup-go@v5
         with:
@@ -50,12 +47,48 @@ jobs:
       - name: Build for iOS and macOS
         run: |
           make ios mac
-          make cleanup
 
-      - name: Upload application
+      - name: Package iOS IPA
+        run: |
+          mkdir -p Payload
+          cp -r Build/synctrain-ios.xcarchive/Products/Applications/Synctrain.app Payload/
+          zip -r Synctrain.ipa Payload
+          rm -rf Payload
+
+      - name: Package macOS ZIP
+        run: |
+          cd Build/synctrain-macos.xcarchive/Products/Applications
+          zip -r ../../../../Synctrain-macos.zip Synctrain.app
+          cd ../../../../
+
+      - name: Upload application artifact
         uses: actions/upload-artifact@v4
         with:
           name: app
           path: ./Build
           retention-days: 3
 
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ipa
+          path: Synctrain.ipa
+          retention-days: 7
+
+      - name: Create Release and Upload Assets
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Sushitrain iOS 15 ${{ github.ref_name }}
+          body: |
+            Sushitrain adapted for iOS 15+
+
+            - **Synctrain.ipa** - iOS app (sideload with AltStore/Sideloadly/TrollStore)
+            - **Synctrain-macos.zip** - macOS app
+          files: |
+            Synctrain.ipa
+            Synctrain-macos.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

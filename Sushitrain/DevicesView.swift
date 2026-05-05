@@ -483,7 +483,7 @@ private struct DevicesGridView: View {
 			TableColumnForEach(self.peers) { peer in
 				TableColumn(peer.displayName) { folder in
 					DevicesGridCellView(appState: appState, device: peer, folder: folder, viewStyle: viewStyle)
-						.environment(self.appState)
+						.environmentObject(self.appState)
 				}.width(ideal: 50).alignment(.center)
 			}
 		}
@@ -493,7 +493,78 @@ private struct DevicesGridView: View {
 	private var normalTable: some View {
 		Table(
 			of: DevicesGridRow.self, selection: $selectedPeers, columnCustomization: $columnCustomization,
-			columns: { self.normalTableColumns },
+			columns: {
+				TableColumn("Device") { (row: DevicesGridRow) in
+					switch row {
+					case .connectedDevice(let peer):
+						HStack {
+							Image(systemName: peer.systemImage).foregroundStyle(peer.displayColor)
+							Text(peer.displayName).foregroundStyle(Color.primary)
+							Spacer()
+						}.frame(maxWidth: .infinity)
+
+					case .discoveredDevice(let devID):
+						HStack {
+							Image(systemName: "plus").foregroundStyle(Color.accentColor)
+							Text(SushitrainShortDeviceID(devID)).compatMonospaced().foregroundStyle(Color.primary)
+							Spacer()
+						}.frame(maxWidth: .infinity)
+					}
+				}.width(min: 100, ideal: self.viewStyle == .simple ? 200 : 100, max: 500).defaultVisibility(.visible)
+					.customizationID("deviceName")
+
+				if viewStyle == .simple {
+					TableColumn("Fingerprint") { (row: DevicesGridRow) in
+						switch row {
+						case .connectedDevice(let peer):
+							IdenticonView(deviceID: peer.deviceID())
+								.padding(5)
+								.environmentObject(self.appState)
+						case .discoveredDevice(let s):
+							IdenticonView(deviceID: s)
+								.padding(5)
+								.environmentObject(self.appState)
+						}
+					}.width(min: 25, ideal: 25, max: 125).defaultVisibility(.hidden).customizationID("fingerprint")
+
+					TableColumn("Short device ID") { (row: DevicesGridRow) in
+						switch row {
+						case .connectedDevice(let peer): Text(peer.shortDeviceID()).compatMonospaced()
+						case .discoveredDevice(let s): Text(SushitrainShortDeviceID(s)).compatMonospaced()
+						}
+					}.width(min: 80, ideal: 100).defaultVisibility(.automatic).customizationID("shortID")
+
+					TableColumn("Device ID") { (row: DevicesGridRow) in
+						switch row {
+						case .connectedDevice(let peer): Text(peer.deviceID()).compatMonospaced()
+						case .discoveredDevice(let s): Text(s).compatMonospaced()
+						}
+					}.width(min: 100, ideal: 520).defaultVisibility(.hidden).customizationID("longID")
+
+					TableColumn("Last address") { (row: DevicesGridRow) in
+						switch row {
+						case .connectedDevice(let peer): Text(self.appState.client.getLastPeerAddress(peer.deviceID())).compatMonospaced()
+						case .discoveredDevice(let s): Text(self.appState.client.getLastPeerAddress(s)).compatMonospaced()
+						}
+					}.width(min: 100, ideal: 200).defaultVisibility(.hidden).customizationID("lastAddress")
+
+					self.simpleViewDetailColumns
+				}
+
+				if viewStyle != .simple {
+					TableColumnForEach(self.folders) { folder in
+						TableColumn(folder.displayName) { (row: DevicesGridRow) in
+							if case .connectedDevice(let peer) = row {
+								DevicesGridCellView(appState: self.appState, device: peer, folder: folder, viewStyle: viewStyle)
+									.environmentObject(self.appState)
+							}
+							else {
+								EmptyView()
+							}
+						}.width(ideal: 50).alignment(.center)
+					}
+				}
+			},
 			rows: {
 				Section { ForEach(self.peers) { peer in TableRow(DevicesGridRow.connectedDevice(peer)) } }
 
@@ -521,84 +592,7 @@ private struct DevicesGridView: View {
 		)
 	}
 
-	@TableColumnBuilder<DevicesGridRow> private var normalTableColumns: some TableColumnContent<DevicesGridRow, EmptyView> {
-		TableColumn("Device") { (row: DevicesGridRow) in
-			switch row {
-			case .connectedDevice(let peer):
-				HStack {
-					Image(systemName: peer.systemImage).foregroundStyle(peer.displayColor)
-					Text(peer.displayName).foregroundStyle(Color.primary)
-					Spacer()
-				}.frame(maxWidth: .infinity)
-
-			case .discoveredDevice(let devID):
-				HStack {
-					Image(systemName: "plus").foregroundStyle(Color.accentColor)
-					Text(SushitrainShortDeviceID(devID)).compatMonospaced().foregroundStyle(Color.primary)
-					Spacer()
-				}.frame(maxWidth: .infinity)
-			}
-		}.width(min: 100, ideal: self.viewStyle == .simple ? 200 : 100, max: 500).defaultVisibility(.visible)
-			.customizationID("deviceName")
-
-		if viewStyle == .simple {
-			self.simpleViewColumns
-		}
-
-		if viewStyle != .simple {
-			TableColumnForEach(self.folders) { folder in
-				TableColumn(folder.displayName) { (row: DevicesGridRow) in
-					if case .connectedDevice(let peer) = row {
-						DevicesGridCellView(appState: self.appState, device: peer, folder: folder, viewStyle: viewStyle)
-							.environment(self.appState)
-					}
-					else {
-						EmptyView()
-					}
-				}.width(ideal: 50).alignment(.center)
-			}
-		}
-	}
-
-	@TableColumnBuilder<DevicesGridRow> private var simpleViewColumns: some TableColumnContent<DevicesGridRow, EmptyView> {
-		TableColumn("Fingerprint") { (row: DevicesGridRow) in
-			switch row {
-			case .connectedDevice(let peer):
-				IdenticonView(deviceID: peer.deviceID())
-					.padding(5)
-					.environment(self.appState)
-			case .discoveredDevice(let s):
-				IdenticonView(deviceID: s)
-					.padding(5)
-					.environment(self.appState)
-			}
-		}.width(min: 25, ideal: 25, max: 125).defaultVisibility(.hidden).customizationID("fingerprint")
-
-		TableColumn("Short device ID") { (row: DevicesGridRow) in
-			switch row {
-			case .connectedDevice(let peer): Text(peer.shortDeviceID()).compatMonospaced()
-			case .discoveredDevice(let s): Text(SushitrainShortDeviceID(s)).compatMonospaced()
-			}
-		}.width(min: 80, ideal: 100).defaultVisibility(.automatic).customizationID("shortID")
-
-		TableColumn("Device ID") { (row: DevicesGridRow) in
-			switch row {
-			case .connectedDevice(let peer): Text(peer.deviceID()).compatMonospaced()
-			case .discoveredDevice(let s): Text(s).compatMonospaced()
-			}
-		}.width(min: 100, ideal: 520).defaultVisibility(.hidden).customizationID("longID")
-
-		TableColumn("Last address") { (row: DevicesGridRow) in
-			switch row {
-			case .connectedDevice(let peer): Text(self.appState.client.getLastPeerAddress(peer.deviceID())).compatMonospaced()
-			case .discoveredDevice(let s): Text(self.appState.client.getLastPeerAddress(s)).compatMonospaced()
-			}
-		}.width(min: 100, ideal: 200).defaultVisibility(.hidden).customizationID("lastAddress")
-
-		self.simpleViewDetailColumns
-	}
-
-	@TableColumnBuilder<DevicesGridRow> private var simpleViewDetailColumns: some TableColumnContent<DevicesGridRow, EmptyView> {
+	private var simpleViewDetailColumns: some TableColumnContent<DevicesGridRow, Never> {
 		TableColumn("Introduced by") { (row: DevicesGridRow) in
 			switch row {
 			case .connectedDevice(let peer):

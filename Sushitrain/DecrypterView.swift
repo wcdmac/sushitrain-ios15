@@ -40,7 +40,7 @@ import SwiftUI
 				self.rightPane
 			}
 		}
-		.fileImporter(isPresented: $showPicker, allowedContentTypes: [.folder], onSelection: { result in
+		.fileImporter(isPresented: $showPicker, allowedContentTypes: [.folder], onCompletion: { result in
 			if case .success = result {
 				if let url = try? result.get() {
 					if showPickerFor == .source {
@@ -144,6 +144,8 @@ import SwiftUI
 			else {
 				CompatContentUnavailableCustomView {
 					Label("No encrypted folder selected", systemImage: "questionmark.folder")
+				} description: {
+					EmptyView()
 				}
 			}
 		}.frame(minWidth: 400, maxWidth: .infinity, maxHeight: .infinity)

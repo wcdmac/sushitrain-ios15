@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2025 Tommy van der Vorst
+// Copyright (C) 2025 Tommy van der Vorst
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
@@ -52,11 +52,61 @@ struct BrowserTableView: View {
 	}
 
 	var body: some View {
+		self.mainTable
+	}
+
+	private var mainTable: some View {
 		Table(
 			of: SushitrainEntry.self,
 			selection: self.$selection,
 			sortOrder: $sortOrder,
-			columns: { self.tableColumns },
+			columns: {
+				TableColumn("Name", sortUsing: EntryComparator(order: .forward, sortBy: .name)) {
+					(entry: SushitrainEntry) in
+					EntryNameView(entry: entry, viewStyle: self.viewStyle)
+						.environmentObject(self.appState)
+				}
+				.defaultVisibility(.visible)
+
+				TableColumn(
+					"File type", sortUsing: EntryComparator(order: .forward, sortBy: .fileExtension)
+				) {
+					(entry: SushitrainEntry) in
+					Text(entry.extension())
+						.foregroundStyle(Color.primary)
+						.opacity(entry.isLocallyPresent() ? 1.0 : EntryView.remoteFileOpacity)
+				}
+				.width(min: 32, max: 64)
+				.defaultVisibility(.hidden)
+
+				TableColumn(
+					"Size",
+					sortUsing: EntryComparator(order: .forward, sortBy: .size)
+				) { entry in
+					if !entry.isDirectory() {
+						Text(Self.formatter.string(fromByteCount: entry.size()))
+							.foregroundStyle(Color.primary)
+							.opacity(entry.isLocallyPresent() ? 1.0 : EntryView.remoteFileOpacity)
+					}
+				}
+				.width(min: 100, max: 120)
+				.defaultVisibility(.hidden)
+				.alignment(.trailing)
+
+				TableColumn(
+					"Last modified",
+					sortUsing: EntryComparator(order: .forward, sortBy: .lastModifiedDate)
+				) { (entry: SushitrainEntry) in
+					if let md = entry.modifiedAt()?.date(), !entry.isSymlink() {
+						Text(md.formatted(date: .numeric, time: .shortened))
+							.foregroundStyle(Color.primary)
+							.opacity(entry.isLocallyPresent() ? 1.0 : EntryView.remoteFileOpacity)
+					}
+				}
+				.width(min: 150, max: 180)
+				.defaultVisibility(.hidden)
+				.alignment(.leading)
+			},
 			rows: {
 				ForEach(entries) { entry in
 					TableRow(entry).draggable(entry)
@@ -88,7 +138,6 @@ struct BrowserTableView: View {
 
 				}
 				else if let item = items.first, items.count == 1 {
-					// Single item selected
 					if let oe = self.entryById(item) {
 						if !oe.isDirectory() && !oe.isSymlink() {
 							#if os(macOS)
@@ -99,7 +148,6 @@ struct BrowserTableView: View {
 									)
 								}.disabled(!oe.canPreview)
 
-								// Copy
 								Button("Copy", systemImage: "document.on.document") {
 									self.copy(oe)
 								}.disabled(!oe.isLocallyPresent())
@@ -110,7 +158,6 @@ struct BrowserTableView: View {
 							FileSharingLinksView(entry: oe, sync: true)
 						}
 
-						// Show file in Finder
 						if oe.canShowInFinder {
 							Button(openInFilesAppLabel, systemImage: "arrow.up.forward.app") {
 								try? oe.showInFinder()
@@ -127,7 +174,6 @@ struct BrowserTableView: View {
 					}
 				}
 				else {
-					// Multiple items selected
 					Text("\(items.count) items selected")
 
 					MultiItemSelectToggleView(files: self.entriesForIds(items))
@@ -138,54 +184,6 @@ struct BrowserTableView: View {
 		.compatNavigationDestination(isPresented: Binding.isNotNil($openedEntry)) {
 			self.nextView()
 		}
-	}
-
-	@TableColumnBuilder<SushitrainEntry> private var tableColumns: some TableColumnContent<SushitrainEntry, EmptyView> {
-		TableColumn("Name", sortUsing: EntryComparator(order: .forward, sortBy: .name)) {
-			(entry: SushitrainEntry) in
-			EntryNameView(entry: entry, viewStyle: self.viewStyle)
-				.environment(self.appState)
-		}
-		.defaultVisibility(.visible)
-
-		TableColumn(
-			"File type", sortUsing: EntryComparator(order: .forward, sortBy: .fileExtension)
-		) {
-			(entry: SushitrainEntry) in
-			Text(entry.extension())
-				.foregroundStyle(Color.primary)
-				.opacity(entry.isLocallyPresent() ? 1.0 : EntryView.remoteFileOpacity)
-		}
-		.width(min: 32, max: 64)
-		.defaultVisibility(.hidden)
-
-		TableColumn(
-			"Size",
-			sortUsing: EntryComparator(order: .forward, sortBy: .size)
-		) { entry in
-			if !entry.isDirectory() {
-				Text(Self.formatter.string(fromByteCount: entry.size()))
-					.foregroundStyle(Color.primary)
-					.opacity(entry.isLocallyPresent() ? 1.0 : EntryView.remoteFileOpacity)
-			}
-		}
-		.width(min: 100, max: 120)
-		.defaultVisibility(.hidden)
-		.alignment(.trailing)
-
-		TableColumn(
-			"Last modified",
-			sortUsing: EntryComparator(order: .forward, sortBy: .lastModifiedDate)
-		) { (entry: SushitrainEntry) in
-			if let md = entry.modifiedAt()?.date(), !entry.isSymlink() {
-				Text(md.formatted(date: .numeric, time: .shortened))
-					.foregroundStyle(Color.primary)
-					.opacity(entry.isLocallyPresent() ? 1.0 : EntryView.remoteFileOpacity)
-			}
-		}
-		.width(min: 150, max: 180)
-		.defaultVisibility(.hidden)
-		.alignment(.leading)
 	}
 
 	@ViewBuilder private func nextView() -> some View {

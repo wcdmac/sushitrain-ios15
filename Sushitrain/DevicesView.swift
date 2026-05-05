@@ -592,7 +592,7 @@ private struct DevicesGridView: View {
 		)
 	}
 
-	private var simpleViewDetailColumns: some TableColumnContent<DevicesGridRow, Never> {
+	@TableColumnBuilder<DevicesGridRow, Never> private var simpleViewDetailColumns: some TableColumnContent<DevicesGridRow, Never> {
 		TableColumn("Introduced by") { (row: DevicesGridRow) in
 			switch row {
 			case .connectedDevice(let peer):

@@ -70,20 +70,12 @@ func compatCachesDirectory() -> URL {
 }
 
 extension View {
-	@ViewBuilder func compatBold(_ isActive: Bool = true) -> some View {
-		if #available(iOS 16, macOS 13, *) {
-			self.bold(isActive)
-		} else {
-			self.font(isActive ? .body.bold() : .body)
-		}
+	func compatBold(_ isActive: Bool = true) -> some View {
+		self.font(isActive ? .body.bold() : .body)
 	}
 
-	@ViewBuilder func compatMonospaced() -> some View {
-		if #available(iOS 16.4, macOS 13.3, *) {
-			self.monospaced()
-		} else {
-			self.font(.system(.body, design: .monospaced))
-		}
+	func compatMonospaced() -> some View {
+		self.font(.system(.body, design: .monospaced))
 	}
 }
 
